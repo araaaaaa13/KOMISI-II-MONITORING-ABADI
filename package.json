@@ -1,0 +1,18 @@
+{
+  "name": "ruang-jejak-react",
+  "version": "1.0.0",
+  "description": "Ruang Jejak — Kenangan Bersama Kakak Komisi II MPK UPT SMAN 1 Soppeng (React 18 & Firebase Realtime Database)",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 3000"
+  },
+  "keywords": [
+    "react",
+    "firebase",
+    "realtime-database",
+    "nostalgia",
+    "organisasi"
+  ],
+  "author": "",
+  "license": "MIT"
+}

@@ -1,55 +1,3 @@
-<!DOCTYPE html>
-<html lang="id">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ruang Jejak — Kenangan Bersama Kakak Komisi II MPK UPT SMAN 1 Soppeng</title>
-  <meta name="description"
-    content="Arsip visual, cerita, dan apresiasi penuh makna selama berproses dan berproker bersama kakak-kakak pengurus organisasi. Dibangun dengan React 18 & Firebase Realtime Database.">
-
-  <!-- Google Fonts: Editorial & Modern Sans -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap"
-    rel="stylesheet">
-
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-  <!-- Style CSS -->
-  <link rel="stylesheet" href="style.css">
-
-  <!-- React 18 & ReactDOM 18 -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <!-- Babel Standalone -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <!-- Firebase SDKs (Realtime Database & Analytics) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
-</head>
-
-<body class="theme-warm">
-  <!-- React App Root Container -->
-  <div id="root">
-    <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;color:#d4af37;font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;gap:0.75rem;">
-      <i class="fa-solid fa-circle-notch fa-spin"></i>
-      <span>Memuat Ruang Jejak (React 18)...</span>
-    </div>
-  </div>
-
-  <noscript>
-    <div style="text-align:center;padding:2rem;color:#fff;">
-      Aplikasi ini membutuhkan JavaScript aktif untuk menjalankan komponen React.
-    </div>
-  </noscript>
-
-  <!-- React Application Component Script (Babel Standalone JSX) -->
-  <script type="text/babel">
 const { useState, useEffect, useMemo, useCallback, useRef } = React;
 
 // ============================================================================
@@ -1959,8 +1907,3 @@ if (container) {
   const root = ReactDOM.createRoot(container);
   root.render(<App />);
 }
-
-  </script>
-</body>
-
-</html>
