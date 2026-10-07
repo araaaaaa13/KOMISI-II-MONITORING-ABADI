@@ -793,6 +793,20 @@ function App() {
                             <i className="fa-solid fa-thumbtack"></i> Sorotan
                           </span>
                         )}
+                        {isAdmin && (
+                          <button
+                            type="button"
+                            className="admin-card-delete-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteMemory(m.id);
+                            }}
+                            title="Hapus foto ini (Admin)"
+                            aria-label={`Hapus foto ${m.title}`}
+                          >
+                            <i className="fa-solid fa-trash-can"></i>
+                          </button>
+                        )}
                       </div>
                       <div className="memory-body">
                         <div className="memory-date">
@@ -989,7 +1003,12 @@ function App() {
         <DetailModal
           memory={selectedDetailMemory}
           isLiked={likedMemories.has(selectedDetailMemory.id)}
+          isAdmin={isAdmin}
           onClose={() => setSelectedDetailMemory(null)}
+          onDeleteMemory={(id) => {
+            handleDeleteMemory(id);
+            setSelectedDetailMemory(null);
+          }}
           onToggleLike={() => toggleLike(selectedDetailMemory.id)}
           onShare={() => {
             if (navigator.share) {
@@ -1692,7 +1711,7 @@ function AdminModal({
 // ============================================================================
 // SUB-COMPONENT: DetailModal (Lightbox)
 // ============================================================================
-function DetailModal({ memory, isLiked, onClose, onToggleLike, onShare }) {
+function DetailModal({ memory, isLiked, isAdmin, onClose, onDeleteMemory, onToggleLike, onShare }) {
   const peopleList = Array.isArray(memory.people) ? memory.people : (memory.people ? memory.people.split(',') : []);
 
   return (
@@ -1746,6 +1765,16 @@ function DetailModal({ memory, isLiked, onClose, onToggleLike, onShare }) {
               <button className="btn btn-outline btn-sm" onClick={onShare}>
                 <i className="fa-solid fa-share-nodes"></i> Bagikan
               </button>
+              {isAdmin && (
+                <button
+                  type="button"
+                  className="btn btn-outline-danger btn-sm"
+                  onClick={() => onDeleteMemory(memory.id)}
+                  title="Hapus foto ini (Admin)"
+                >
+                  <i className="fa-regular fa-trash-can"></i> Hapus Foto
+                </button>
+              )}
             </div>
           </div>
         </div>

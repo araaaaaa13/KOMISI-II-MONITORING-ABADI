@@ -512,6 +512,11 @@ function renderGallery() {
           <img src="${escapeHTML(m.image)}" alt="${escapeHTML(m.title)}" loading="lazy">
           <span class="memory-proker-tag">${escapeHTML(m.proker)}</span>
           ${m.featured ? `<span class="featured-pin"><i class="fa-solid fa-thumbtack"></i> Sorotan</span>` : ''}
+          ${appState.isAdmin ? `
+            <button type="button" class="admin-card-delete-btn" data-delete-id="${m.id}" title="Hapus foto ini (Admin)" aria-label="Hapus foto ${escapeHTML(m.title)}">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          ` : ''}
         </div>
         <div class="memory-body">
           <div class="memory-date">
@@ -537,9 +542,20 @@ function renderGallery() {
   // Add click events for Card opening Lightbox
   grid.querySelectorAll('.memory-card').forEach(card => {
     card.addEventListener('click', (e) => {
-      if (e.target.closest('.memory-like-btn')) return; // ignore if clicking heart
+      if (e.target.closest('.memory-like-btn') || e.target.closest('.admin-card-delete-btn')) return; // ignore if clicking heart or delete
       const id = card.dataset.id;
       openDetailModal(id);
+    });
+  });
+
+  // Add admin delete button listeners
+  grid.querySelectorAll('.admin-card-delete-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = btn.dataset.deleteId;
+      if (typeof window.deletePhoto === 'function') {
+        window.deletePhoto(id);
+      }
     });
   });
 
@@ -694,6 +710,29 @@ function openDetailModal(id) {
         showToast('Tautan kenangan disalin ke papan klip!', 'info');
       }
     };
+  }
+
+  // Setup Admin Delete button in Detail Modal
+  const actionsContainer = modal.querySelector('.detail-footer-actions');
+  if (actionsContainer) {
+    let adminDelBtn = actionsContainer.querySelector('.btn-detail-delete-admin');
+    if (appState.isAdmin) {
+      if (!adminDelBtn) {
+        adminDelBtn = document.createElement('button');
+        adminDelBtn.className = 'btn btn-outline-danger btn-sm btn-detail-delete-admin';
+        adminDelBtn.innerHTML = '<i class="fa-regular fa-trash-can"></i> Hapus Foto';
+        actionsContainer.appendChild(adminDelBtn);
+      }
+      adminDelBtn.onclick = () => {
+        closeDetailModal();
+        if (typeof window.deletePhoto === 'function') {
+          window.deletePhoto(id);
+        }
+      };
+      adminDelBtn.style.display = 'inline-flex';
+    } else if (adminDelBtn) {
+      adminDelBtn.style.display = 'none';
+    }
   }
 
   modal.classList.add('active');
@@ -886,6 +925,8 @@ function updateAuthUI() {
       btnOpenLoginModal.title = 'Masuk Admin Pengurus';
     }
   }
+
+  renderGallery();
 }
 
 // ============================================================================
