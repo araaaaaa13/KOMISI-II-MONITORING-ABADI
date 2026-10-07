@@ -1,7 +1,8 @@
 /**
  * RUANG JEJAK — LOGIKA APLIKASI
  * Kenangan Bersama Kakak Organisasi Selama Berproker
- * Fitur: Amplop Interaktif, Dasbor Admin, IndexedDB Photo Storage, Galeri & Apresiasi
+ * Fitur: Amplop Int
+ * eraktif, Dasbor Admin, IndexedDB Photo Storage, Galeri & Apresiasi
  */
 
 // ============================================================================
