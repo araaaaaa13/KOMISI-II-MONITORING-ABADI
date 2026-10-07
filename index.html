@@ -50,6 +50,10 @@
       </nav>
 
       <div class="nav-actions">
+        <div class="cloud-status-badge" id="cloudStatusBadge" title="Status Sinkronisasi Firebase Realtime Database">
+          <span class="cloud-dot" id="cloudStatusDot"></span>
+          <span id="cloudStatusText">Firebase...</span>
+        </div>
         <button class="btn btn-outline" id="btnOpenWriteMessage">
           <i class="fa-solid fa-feather-pointed"></i> Tulis Pesan
         </button>
@@ -69,6 +73,12 @@
   <!-- Mobile Drawer -->
   <div class="mobile-drawer" id="mobileDrawer">
     <div class="mobile-drawer-content">
+      <div class="mobile-cloud-wrapper">
+        <div class="cloud-status-badge mobile-cloud-badge" id="mobileCloudBadge">
+          <span class="cloud-dot" id="mobileCloudDot"></span>
+          <span id="mobileCloudText">Firebase...</span>
+        </div>
+      </div>
       <a href="#galeri" class="mobile-nav-link">Galeri Kenangan</a>
       <a href="#linimasa" class="mobile-nav-link">Linimasa Proker</a>
       <a href="#pesan" class="mobile-nav-link">Surat & Pesan</a>
@@ -681,6 +691,11 @@
 
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- Firebase SDKs (Realtime Database & Analytics) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
 
   <!-- Scripts -->
   <script src="app.js"></script>

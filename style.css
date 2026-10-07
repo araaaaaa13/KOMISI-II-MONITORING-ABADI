@@ -272,6 +272,73 @@ h1, h2, h3, h4, .serif-font {
   gap: 0.85rem;
 }
 
+/* Cloud Status Badge */
+.cloud-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(30, 27, 24, 0.75);
+  border: 1px solid var(--border-medium);
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--text-cream-muted);
+  user-select: none;
+  transition: all var(--transition-smooth);
+}
+
+.cloud-status-badge.connected {
+  border-color: rgba(16, 185, 129, 0.35);
+  color: var(--text-cream-secondary);
+}
+
+.cloud-status-badge.offline {
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.cloud-dot {
+  width: 7.5px;
+  height: 7.5px;
+  border-radius: 50%;
+  background-color: #94a3b8;
+  display: inline-block;
+  flex-shrink: 0;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cloud-status-badge.connected .cloud-dot {
+  background-color: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
+}
+
+.cloud-status-badge.syncing .cloud-dot {
+  background-color: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+  animation: cloudPulse 1.2s infinite;
+}
+
+.cloud-status-badge.offline .cloud-dot {
+  background-color: #f59e0b;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+}
+
+@keyframes cloudPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.35); opacity: 0.6; }
+}
+
+.mobile-cloud-wrapper {
+  margin-bottom: 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.mobile-cloud-badge {
+  display: flex;
+  width: fit-content;
+}
+
 .mobile-toggle {
   display: none;
   background: transparent;

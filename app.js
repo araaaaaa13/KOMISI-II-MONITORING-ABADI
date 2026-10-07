@@ -129,8 +129,21 @@ const DEFAULT_MESSAGES = [
 ];
 
 // ============================================================================
-// 2. STATE MANAGEMENT & STORAGE (INDEXEDDB + LOCALSTORAGE)
+// 2. STATE MANAGEMENT & STORAGE (FIREBASE REALTIME DB + INDEXEDDB FALLBACK)
 // ============================================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyAzaSHpYIXHXu8zF8C1brppHwhu3XgCNEA",
+  authDomain: "webkomtwo-3d431.firebaseapp.com",
+  databaseURL: "https://webkomtwo-3d431-default-rtdb.firebaseio.com",
+  projectId: "webkomtwo-3d431",
+  storageBucket: "webkomtwo-3d431.firebasestorage.app",
+  messagingSenderId: "773122461200",
+  appId: "1:773122461200:web:bd2a7ac2fc9db9842ec495",
+  measurementId: "G-C2CRSPLF34"
+};
+let db = null;
+let firebaseInitialized = false;
+
 let appState = {
   memories: [],
   messages: [],
@@ -140,7 +153,39 @@ let appState = {
   likedMemories: new Set()
 };
 
-// IndexedDB Helper for Photo Storage (Ensures high-res photos never exceed localStorage limits)
+// Update Cloud Status Indicator UI
+function updateCloudStatus(status, text) {
+  const badge = document.getElementById('cloudStatusBadge');
+  const dot = document.getElementById('cloudStatusDot');
+  const label = document.getElementById('cloudStatusText');
+
+  const mobileBadge = document.getElementById('mobileCloudBadge');
+  const mobileDot = document.getElementById('mobileCloudDot');
+  const mobileLabel = document.getElementById('mobileCloudText');
+
+  const applyStatus = (b, d, l) => {
+    if (!b) return;
+    b.classList.remove('connected', 'syncing', 'offline');
+    if (status === 'connected') {
+      b.classList.add('connected');
+      if (l) l.textContent = text || 'Cloud Aktif';
+      b.title = 'Terhubung ke Firebase Realtime Database (webkomtwo-3d431)';
+    } else if (status === 'syncing') {
+      b.classList.add('syncing');
+      if (l) l.textContent = text || 'Sinkronisasi...';
+      b.title = 'Sedang menyinkronkan data dengan Firebase...';
+    } else {
+      b.classList.add('offline');
+      if (l) l.textContent = text || 'Mode Lokal';
+      b.title = 'Tersimpan lokal (IndexedDB/localStorage)';
+    }
+  };
+
+  applyStatus(badge, dot, label);
+  applyStatus(mobileBadge, mobileDot, mobileLabel);
+}
+
+// IndexedDB Helper for Local Photo Storage & Caching
 const DB_NAME = 'RuangJejakDB';
 const DB_VERSION = 1;
 const STORE_NAME = 'memories_store';
@@ -149,9 +194,9 @@ function openDatabase() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
     request.onupgradeneeded = (e) => {
-      const db = e.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+      const dbInstance = e.target.result;
+      if (!dbInstance.objectStoreNames.contains(STORE_NAME)) {
+        dbInstance.createObjectStore(STORE_NAME, { keyPath: 'id' });
       }
     };
     request.onsuccess = (e) => resolve(e.target.result);
@@ -161,10 +206,9 @@ function openDatabase() {
 
 async function saveMemoriesToDB(memories) {
   try {
-    const db = await openDatabase();
-    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const localDb = await openDatabase();
+    const tx = localDb.transaction(STORE_NAME, 'readwrite');
     const store = tx.objectStore(STORE_NAME);
-    // Clear and re-populate
     await new Promise((res, rej) => {
       const clearReq = store.clear();
       clearReq.onsuccess = () => res();
@@ -189,8 +233,8 @@ async function saveMemoriesToDB(memories) {
 
 async function loadMemoriesFromDB() {
   try {
-    const db = await openDatabase();
-    const tx = db.transaction(STORE_NAME, 'readonly');
+    const localDb = await openDatabase();
+    const tx = localDb.transaction(STORE_NAME, 'readonly');
     const store = tx.objectStore(STORE_NAME);
     const request = store.getAll();
     return new Promise((resolve) => {
@@ -210,7 +254,7 @@ async function loadMemoriesFromDB() {
   }
 }
 
-// Initial Data Load
+// Initial Data Load (Instant local cache first)
 async function initData() {
   // Check Likes
   try {
@@ -220,7 +264,7 @@ async function initData() {
     appState.likedMemories = new Set();
   }
 
-  // Load Memories
+  // Load Memories from local storage first for instant render
   const storedMemories = await loadMemoriesFromDB();
   if (storedMemories && storedMemories.length > 0) {
     appState.memories = storedMemories;
@@ -229,7 +273,7 @@ async function initData() {
     await saveMemoriesToDB(appState.memories);
   }
 
-  // Load Messages
+  // Load Messages from local storage first
   const storedMessages = localStorage.getItem('rj_messages');
   if (storedMessages) {
     try {
@@ -251,6 +295,118 @@ async function initData() {
   renderGallery();
   renderTimeline();
   renderMessages();
+}
+
+// Initialize Firebase & Realtime Listeners
+function initFirebase() {
+  if (typeof firebase !== 'undefined') {
+    try {
+      if (!firebase.apps || !firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      db = firebase.database();
+      firebaseInitialized = true;
+      try {
+        if (firebase.analytics) firebase.analytics();
+      } catch (e) {
+        // Analytics optional
+      }
+
+      updateCloudStatus('syncing', 'Menyambung...');
+
+      // Monitor connection state
+      const connectedRef = db.ref('.info/connected');
+      connectedRef.on('value', (snap) => {
+        if (snap.val() === true) {
+          updateCloudStatus('connected', 'Cloud Aktif');
+        } else {
+          updateCloudStatus('offline', 'Mode Lokal');
+        }
+      });
+
+      setupFirebaseListeners();
+    } catch (err) {
+      console.warn('Firebase init error:', err);
+      updateCloudStatus('offline', 'Mode Lokal');
+    }
+  } else {
+    console.warn('Firebase SDK compat tidak dimuat, berjalan pada penyimpanan lokal.');
+    updateCloudStatus('offline', 'Mode Lokal');
+  }
+}
+
+// Real-time synchronization listeners
+function setupFirebaseListeners() {
+  if (!db) return;
+
+  // Real-time listener: Memories
+  db.ref('memories').on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      let list = Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
+      // Sort memories by date descending
+      list.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+      appState.memories = list;
+      saveMemoriesToDB(list);
+      updateStats();
+      renderFilterChips();
+      renderGallery();
+      renderAdminPhotosTable();
+    } else {
+      // If Firebase database node is empty, seed with default memories
+      seedDefaultMemoriesToFirebase();
+    }
+  }, (err) => {
+    console.warn('Firebase memories listener error:', err);
+  });
+
+  // Real-time listener: Messages
+  db.ref('messages').on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      let list = Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
+      list.sort((a, b) => (b.id > a.id ? 1 : -1));
+      appState.messages = list;
+      saveMessages();
+      updateStats();
+      renderMessages();
+      renderAdminMessagesTable();
+    } else {
+      // If Firebase database node is empty, seed with default messages
+      seedDefaultMessagesToFirebase();
+    }
+  }, (err) => {
+    console.warn('Firebase messages listener error:', err);
+  });
+}
+
+// Seed default data to Firebase Realtime Database
+async function seedDefaultMemoriesToFirebase() {
+  if (!db) return;
+  try {
+    const updates = {};
+    DEFAULT_MEMORIES.forEach(m => {
+      updates[m.id] = m;
+    });
+    await db.ref('memories').set(updates);
+    console.log('Default memories successfully seeded to Firebase.');
+  } catch (err) {
+    console.warn('Gagal seeding memories ke Firebase:', err);
+  }
+}
+
+async function seedDefaultMessagesToFirebase() {
+  if (!db) return;
+  try {
+    const updates = {};
+    DEFAULT_MESSAGES.forEach(m => {
+      updates[m.id] = m;
+    });
+    await db.ref('messages').set(updates);
+    console.log('Default messages successfully seeded to Firebase.');
+  } catch (err) {
+    console.warn('Gagal seeding messages ke Firebase:', err);
+  }
 }
 
 function saveMessages() {
@@ -413,7 +569,16 @@ function toggleLike(id, btnElement) {
   }
 
   saveLikes();
-  saveMemoriesToDB(appState.memories);
+
+  // Sync like count to Firebase RTDB
+  if (db) {
+    db.ref('memories/' + id + '/likes').transaction((curr) => {
+      const currentVal = typeof curr === 'number' ? curr : (memory.likes || 0);
+      return isLiked ? Math.max(0, currentVal - 1) : currentVal + 1;
+    });
+  } else {
+    saveMemoriesToDB(appState.memories);
+  }
 
   // Update UI immediately
   if (btnElement) {
@@ -791,13 +956,28 @@ function initAdminDashboard() {
         featured: document.getElementById('memFeatured').checked
       };
 
-      // Add to beginning of array
-      appState.memories.unshift(newMemory);
-      await saveMemoriesToDB(appState.memories);
+      // Save to Firebase RTDB if online, otherwise fallback to local DB
+      if (db) {
+        updateCloudStatus('syncing', 'Menyimpan...');
+        try {
+          await db.ref('memories/' + newMemory.id).set(newMemory);
+          updateCloudStatus('connected', 'Cloud Aktif');
+        } catch (err) {
+          console.warn('Gagal menyimpan ke Firebase:', err);
+          appState.memories.unshift(newMemory);
+          await saveMemoriesToDB(appState.memories);
+          updateStats();
+          renderFilterChips();
+          renderGallery();
+        }
+      } else {
+        appState.memories.unshift(newMemory);
+        await saveMemoriesToDB(appState.memories);
+        updateStats();
+        renderFilterChips();
+        renderGallery();
+      }
 
-      updateStats();
-      renderFilterChips();
-      renderGallery();
       showToast(`Kenangan "${newMemory.title}" berhasil diarsipkan! 🎉`, 'success');
 
       // Reset form & preview
@@ -870,11 +1050,39 @@ function initPhotoDropzone() {
 
     const reader = new FileReader();
     reader.onload = (e) => {
-      currentUploadedImageDataUrl = e.target.result;
-      previewImg.src = currentUploadedImageDataUrl;
-      previewBox.classList.remove('hidden');
-      promptBox.classList.add('hidden');
-      showToast('Foto siap diunggah!', 'info');
+      const img = new Image();
+      img.onload = () => {
+        const maxDimension = 1200;
+        let width = img.width;
+        let height = img.height;
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            height = Math.round((height * maxDimension) / width);
+            width = maxDimension;
+          } else {
+            width = Math.round((width * maxDimension) / height);
+            height = maxDimension;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        currentUploadedImageDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        previewImg.src = currentUploadedImageDataUrl;
+        previewBox.classList.remove('hidden');
+        promptBox.classList.add('hidden');
+        showToast('Foto dioptimalkan & siap diunggah!', 'info');
+      };
+      img.onerror = () => {
+        currentUploadedImageDataUrl = e.target.result;
+        previewImg.src = currentUploadedImageDataUrl;
+        previewBox.classList.remove('hidden');
+        promptBox.classList.add('hidden');
+        showToast('Foto siap diunggah!', 'info');
+      };
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   }
@@ -996,7 +1204,19 @@ window.toggleFeaturedPhoto = async function (id) {
   const item = appState.memories.find(m => m.id === id);
   if (!item) return;
   item.featured = !item.featured;
-  await saveMemoriesToDB(appState.memories);
+  
+  if (db) {
+    updateCloudStatus('syncing', 'Memperbarui...');
+    try {
+      await db.ref('memories/' + id + '/featured').set(item.featured);
+      updateCloudStatus('connected', 'Cloud Aktif');
+    } catch (err) {
+      console.warn('Gagal update status sorotan di Firebase:', err);
+    }
+  } else {
+    await saveMemoriesToDB(appState.memories);
+  }
+
   renderAdminPhotosTable();
   renderGallery();
   showToast(`Status sorotan untuk "${item.title}" diperbarui.`, 'info');
@@ -1007,12 +1227,22 @@ window.deletePhoto = async function (id) {
   if (!item) return;
 
   if (confirm(`Apakah kamu yakin ingin menghapus kenangan "${item.title}"?`)) {
-    appState.memories = appState.memories.filter(m => m.id !== id);
-    await saveMemoriesToDB(appState.memories);
-    updateStats();
-    renderFilterChips();
-    renderAdminPhotosTable();
-    renderGallery();
+    if (db) {
+      updateCloudStatus('syncing', 'Menghapus...');
+      try {
+        await db.ref('memories/' + id).remove();
+        updateCloudStatus('connected', 'Cloud Aktif');
+      } catch (err) {
+        console.warn('Gagal menghapus dari Firebase:', err);
+      }
+    } else {
+      appState.memories = appState.memories.filter(m => m.id !== id);
+      await saveMemoriesToDB(appState.memories);
+      updateStats();
+      renderFilterChips();
+      renderAdminPhotosTable();
+      renderGallery();
+    }
     showToast('Foto kenangan berhasil dihapus.', 'info');
   }
 };
@@ -1042,13 +1272,23 @@ function renderAdminMessagesTable() {
   `).join('');
 }
 
-window.deleteMessage = function (id) {
+window.deleteMessage = async function (id) {
   if (confirm('Hapus surat apresiasi ini dari papan?')) {
-    appState.messages = appState.messages.filter(m => m.id !== id);
-    saveMessages();
-    updateStats();
-    renderAdminMessagesTable();
-    renderMessages();
+    if (db) {
+      updateCloudStatus('syncing', 'Menghapus...');
+      try {
+        await db.ref('messages/' + id).remove();
+        updateCloudStatus('connected', 'Cloud Aktif');
+      } catch (err) {
+        console.warn('Gagal menghapus pesan dari Firebase:', err);
+      }
+    } else {
+      appState.messages = appState.messages.filter(m => m.id !== id);
+      saveMessages();
+      updateStats();
+      renderAdminMessagesTable();
+      renderMessages();
+    }
     showToast('Pesan berhasil dihapus.', 'info');
   }
 };
@@ -1081,12 +1321,24 @@ function importDataBackup(e) {
     try {
       const parsed = JSON.parse(event.target.result);
       if (Array.isArray(parsed.memories)) {
-        appState.memories = parsed.memories;
-        await saveMemoriesToDB(appState.memories);
+        if (db) {
+          const memUpdates = {};
+          parsed.memories.forEach(m => { memUpdates[m.id] = m; });
+          await db.ref('memories').set(memUpdates);
+        } else {
+          appState.memories = parsed.memories;
+          await saveMemoriesToDB(appState.memories);
+        }
       }
       if (Array.isArray(parsed.messages)) {
-        appState.messages = parsed.messages;
-        saveMessages();
+        if (db) {
+          const msgUpdates = {};
+          parsed.messages.forEach(m => { msgUpdates[m.id] = m; });
+          await db.ref('messages').set(msgUpdates);
+        } else {
+          appState.messages = parsed.messages;
+          saveMessages();
+        }
       }
       updateStats();
       renderFilterChips();
@@ -1104,16 +1356,23 @@ function importDataBackup(e) {
 
 async function resetToDefaultData() {
   if (confirm('Kembalikan semua galeri foto dan pesan ke versi contoh awal? Data baru yang belum dicadangkan akan hilang.')) {
-    appState.memories = [...DEFAULT_MEMORIES];
-    appState.messages = [...DEFAULT_MESSAGES];
-    await saveMemoriesToDB(appState.memories);
-    saveMessages();
-    updateStats();
-    renderFilterChips();
-    renderGallery();
-    renderMessages();
-    renderAdminPhotosTable();
-    renderAdminMessagesTable();
+    if (db) {
+      updateCloudStatus('syncing', 'Mereset...');
+      await seedDefaultMemoriesToFirebase();
+      await seedDefaultMessagesToFirebase();
+      updateCloudStatus('connected', 'Cloud Aktif');
+    } else {
+      appState.memories = [...DEFAULT_MEMORIES];
+      appState.messages = [...DEFAULT_MESSAGES];
+      await saveMemoriesToDB(appState.memories);
+      saveMessages();
+      updateStats();
+      renderFilterChips();
+      renderGallery();
+      renderMessages();
+      renderAdminPhotosTable();
+      renderAdminMessagesTable();
+    }
     showToast('Data berhasil di-reset ke pengaturan bawaan.', 'success');
   }
 }
@@ -1173,10 +1432,24 @@ function initWriteMessageModal() {
         theme
       };
 
-      appState.messages.unshift(newMessage);
-      saveMessages();
-      updateStats();
-      renderMessages();
+      if (db) {
+        updateCloudStatus('syncing', 'Mengirim...');
+        try {
+          await db.ref('messages/' + newMessage.id).set(newMessage);
+          updateCloudStatus('connected', 'Cloud Aktif');
+        } catch (err) {
+          console.warn('Gagal menyimpan pesan ke Firebase:', err);
+          appState.messages.unshift(newMessage);
+          saveMessages();
+          updateStats();
+          renderMessages();
+        }
+      } else {
+        appState.messages.unshift(newMessage);
+        saveMessages();
+        updateStats();
+        renderMessages();
+      }
 
       closeModal();
       form.reset();
@@ -1449,6 +1722,7 @@ function formatDateIndonesian(dateStr) {
 // ============================================================================
 document.addEventListener('DOMContentLoaded', () => {
   initData();
+  initFirebase();
   initEnvelopeLogin();
   initAdminDashboard();
   initWriteMessageModal();
