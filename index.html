@@ -1279,7 +1279,7 @@ function AdminModal({
         canvas.height = h;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, w, h);
-        setPhotoPreview(canvas.toDataURL('image/jpeg', 0.85));
+        setPhotoPreview(canvas.toDataURL('image/webp', 0.4));
       };
       img.src = e.target.result;
     };
