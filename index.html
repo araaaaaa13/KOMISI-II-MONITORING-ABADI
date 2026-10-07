@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruang Jejak — Kenangan Bersama Kakak Komisi II MPK UPT SMAN 1 Soppeng</title>
+  <meta name="description"
+    content="Arsip visual, cerita, dan apresiasi penuh makna selama berproses dan berproker bersama kakak-kakak pengurus organisasi.">
+
+  <!-- Google Fonts: Editorial & Modern Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap"
+    rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="theme-warm">
+
+  <!-- Ambient Audio Indicator / Player -->
+  <div class="ambient-bar" id="ambientBar">
+    <button class="ambient-toggle" id="ambientToggle" title="Putar Musik Suasana Nostalgia"
+      aria-label="Toggle Musik Suasana">
+      <i class="fa-solid fa-music note-icon"></i>
+      <span class="ambient-text" id="ambientText">Suasana Nostalgia: Mati</span>
+      <span class="wave-bars" id="waveBars">
+        <span></span><span></span><span></span><span></span>
+      </span>
+    </button>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#" class="brand-logo" id="navBrand">
+        <span class="brand-sub">MEMORIA PROKER</span>
+        <span class="brand-title">Ruang Jejak</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#galeri" class="nav-item active"><i class="fa-regular fa-image"></i> Galeri Kenangan</a>
+        <a href="#linimasa" class="nav-item"><i class="fa-solid fa-timeline"></i> Linimasa Proker</a>
+        <a href="#pesan" class="nav-item"><i class="fa-regular fa-envelope"></i> Surat & Pesan</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="btn btn-outline" id="btnOpenWriteMessage">
+          <i class="fa-solid fa-feather-pointed"></i> Tulis Pesan
+        </button>
+        <button class="btn btn-primary" id="btnOpenLoginModal">
+          <i class="fa-solid fa-lock" id="authBtnIcon"></i>
+          <span id="authBtnText">Masuk / Admin</span>
+        </button>
+      </div>
+
+      <!-- Mobile Menu Toggle -->
+      <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Buka Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer -->
+  <div class="mobile-drawer" id="mobileDrawer">
+    <div class="mobile-drawer-content">
+      <a href="#galeri" class="mobile-nav-link">Galeri Kenangan</a>
+      <a href="#linimasa" class="mobile-nav-link">Linimasa Proker</a>
+      <a href="#pesan" class="mobile-nav-link">Surat & Pesan</a>
+      <hr class="drawer-divider">
+      <button class="btn btn-outline w-100 mb-2" id="btnMobileWrite">
+        <i class="fa-solid fa-feather-pointed"></i> Tulis Pesan
+      </button>
+      <button class="btn btn-primary w-100" id="btnMobileLogin">
+        <i class="fa-solid fa-lock"></i> Masuk Admin
+      </button>
+    </div>
+  </div>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+      <div class="hero-bg-glow"></div>
+      <div class="container hero-content">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          <span>Arsip Dokumentasi & Rasa Terima Kasih</span>
+        </div>
+        <h1 class="hero-title">
+          Untuk Setiap Keringat, Tawa, & <span class="highlight-serif">Malam Panjang</span> yang Kita Lalui Bersama.
+        </h1>
+        <p class="hero-subtitle">
+          Dari revisi proposal tak berujung, kepanikan hari-H, hingga pelukan lega di panggung evaluasi.
+          Sebuah ruang apresiasi tulus untuk kakak-kakak terbaik yang membimbing kami bertumbuh di setiap program kerja.
+        </p>
+
+        <div class="hero-stats">
+          <div class="stat-card">
+            <span class="stat-num" id="statProkerCount">8</span>
+            <span class="stat-label">Program Kerja</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-card">
+            <span class="stat-num" id="statPhotosCount">24</span>
+            <span class="stat-label">Momen Terabadikan</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-card">
+            <span class="stat-num" id="statMessagesCount">15</span>
+            <span class="stat-label">Surat & Apresiasi</span>
+          </div>
+        </div>
+
+        <div class="hero-cta-group">
+          <a href="#galeri" class="btn btn-hero-primary">
+            Jelajahi Kenangan <i class="fa-solid fa-arrow-down-long"></i>
+          </a>
+          <button class="btn btn-hero-secondary" id="btnEnvelopeDemo">
+            <i class="fa-regular fa-envelope-open"></i> Buka Amplop Masuk
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROKER FILTER & GALLERY SECTION -->
+    <section class="section-gallery" id="galeri">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-meta">
+            <span class="section-subtitle">Galeri Momen Berharga</span>
+            <h2 class="section-title">Rekam Jejak di Balik Layar</h2>
+          </div>
+          <div class="search-filter-box">
+            <div class="search-input-wrapper">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="searchInput" placeholder="Cari proker, kakak, atau momen..."
+                aria-label="Cari kenangan">
+              <button class="clear-search-btn" id="clearSearchBtn" title="Bersihkan pencarian">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Tags -->
+        <div class="filter-scroll-wrapper">
+          <div class="filter-chips" id="filterChips">
+            <button class="chip active" data-filter="all">Semua Momen</button>
+            <!-- Generated via JS dynamically from data -->
+          </div>
+        </div>
+
+        <!-- Photo Grid Container -->
+        <div class="gallery-grid" id="galleryGrid">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state hidden" id="emptyState">
+          <div class="empty-icon"><i class="fa-regular fa-folder-open"></i></div>
+          <h3>Belum ada kenangan yang cocok</h3>
+          <p>Coba kata kunci lain atau pilih kategori proker yang berbeda.</p>
+          <button class="btn btn-outline" id="btnResetFilter">Tampilkan Semua</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TIMELINE SECTION -->
+    <section class="section-timeline" id="linimasa">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-subtitle">Langkah Demi Langkah</span>
+          <h2 class="section-title">Perjalanan Satu Periode</h2>
+          <p class="section-desc max-600">
+            Setiap fase menyimpan cerita unik; dari masa orientasi yang canggung hingga puncak proker yang menguras
+            emosi.
+          </p>
+        </div>
+
+        <div class="timeline-container" id="timelineContainer">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- WALL OF GRATITUDE / PESAN & KESAN -->
+    <section class="section-messages" id="pesan">
+      <div class="container">
+        <div class="section-header between">
+          <div>
+            <span class="section-subtitle">Apresiasi & Doa</span>
+            <h2 class="section-title">Surat Kasih untuk Kakak</h2>
+            <p class="section-desc">Pesan tulus dari adik-adik tingkat yang tak sempat terucap secara langsung.</p>
+          </div>
+          <button class="btn btn-primary" id="btnOpenWriteMessageBottom">
+            <i class="fa-solid fa-pen-nib"></i> Titip Pesan Baru
+          </button>
+        </div>
+
+        <div class="messages-grid" id="messagesGrid">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <div class="brand-title">Ruang Jejak</div>
+        <p class="footer-tagline">
+          Didedikasikan untuk para pemimpin, mentor, dan kakak terhebat dalam kepengurusan. Terima kasih telah menjadi
+          rumah dan lentera.
+        </p>
+      </div>
+      <div class="footer-links">
+        <span class="footer-label">Navigasi Pintas</span>
+        <a href="#galeri">Koleksi Foto</a>
+        <a href="#linimasa">Perjalanan Proker</a>
+        <a href="#pesan">Papan Ucapan</a>
+      </div>
+      <div class="footer-admin-link">
+        <span class="footer-label">Area Pengurus</span>
+        <button class="btn-text-link" id="footerAdminBtn">
+          <i class="fa-solid fa-shield-halved"></i> Kelola Arsip (Admin)
+        </button>
+        <p class="footer-copy">© 2024–2026 Keluarga Besar Organisasi. Selamanya bersaudara.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================== -->
+  <!-- MODAL: INTERACTIVE ENVELOPE LOGIN EXPERIENCE   -->
+  <!-- ============================================== -->
+  <div class="modal-backdrop" id="loginModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="envelope-modal-wrapper">
+      <button class="modal-close-btn" id="closeLoginModal" aria-label="Tutup Jendela">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- Envelope Stage -->
+      <div class="envelope-stage" id="envelopeStage">
+        <!-- Interactive Envelope 3D Container -->
+        <div class="envelope-container" id="envelopeContainer">
+
+          <!-- Back Interior of Envelope -->
+          <div class="envelope-back"></div>
+
+          <!-- The Sliding Letter / Form Card -->
+          <div class="envelope-letter" id="envelopeLetter">
+            <div class="letter-inner">
+              <div class="letter-header">
+                <span class="letter-seal-mini"><i class="fa-solid fa-stamp"></i></span>
+                <span class="letter-tag">Akses Resmi Pengurus</span>
+                <h3 class="letter-title">Pintu Ruang Kenangan</h3>
+                <p class="letter-sub">Masuk untuk mengelola dokumentasi proker atau menambah foto baru.</p>
+              </div>
+
+              <!-- Login Form Inside Letter -->
+              <form id="adminLoginForm" class="letter-form" autocomplete="off">
+                <div class="form-group">
+                  <label for="adminUsername"><i class="fa-regular fa-user"></i> Nama Pengguna</label>
+                  <input type="text" id="adminUsername" class="form-input" placeholder="Masukkan username" required
+                    autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                  <label for="adminPassword"><i class="fa-solid fa-key"></i> Kata Sandi</label>
+                  <div class="password-wrapper">
+                    <input type="password" id="adminPassword" class="form-input" placeholder="Masukkan kata sandi"
+                      required autocomplete="current-password">
+                    <button type="button" class="toggle-pwd-btn" id="togglePwdBtn" aria-label="Tampilkan sandi">
+                      <i class="fa-regular fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="login-feedback hidden" id="loginFeedback"></div>
+
+                <button type="submit" class="btn btn-primary w-100 btn-submit-login">
+                  <i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk ke Dasbor Admin
+                </button>
+
+                <div class="quick-admin-hint">
+                  <p class="hint-title"><i class="fa-solid fa-circle-info"></i> Info Akun Akses (Uji Coba):</p>
+                  <div class="hint-badges">
+                    <span class="credential-pill" id="fillAdminCreds" title="Klik untuk isi otomatis">
+                      Username: <strong>ADALAH</strong> | Sandi: <strong>KOMISI2</strong>
+                    </span>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Envelope Front Left & Right Pockets -->
+          <div class="envelope-front-pocket"></div>
+
+          <!-- Envelope Top Flap (Flips open 180deg) -->
+          <div class="envelope-flap" id="envelopeFlap">
+            <!-- Wax Seal Button -->
+            <div class="wax-seal" id="waxSealBtn" title="Klik Segel Lilin untuk Membuka Amplop" role="button"
+              tabindex="0">
+              <div class="wax-seal-inner">
+                <span class="wax-monogram">RJ</span>
+              </div>
+              <div class="wax-pulse"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="envelope-instruction" id="envelopeInstruction">
+          <i class="fa-regular fa-hand-pointer pulse-icon"></i>
+          <span>Ketuk segel lilin merah di atas untuk membuka amplop</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODAL: ADMIN DASHBOARD (UPLOAD & MANAGE)      -->
+  <!-- ============================================== -->
+  <div class="modal-backdrop" id="adminModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="admin-modal-container">
+      <div class="admin-modal-header">
+        <div class="admin-header-title">
+          <div class="admin-avatar"><i class="fa-solid fa-user-gear"></i></div>
+          <div>
+            <h3 class="admin-title">Dasbor Arsiparis & Admin</h3>
+            <span class="admin-sub">Kelola kenangan proker, unggah foto dokumentasi, dan pesan apresiasi</span>
+          </div>
+        </div>
+        <div class="admin-header-actions">
+          <button class="btn btn-outline btn-sm" id="btnAdminLogout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
+          </button>
+          <button class="modal-close-btn relative" id="closeAdminModal" aria-label="Tutup Dasbor Admin">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Admin Tabs -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="tabUpload">
+          <i class="fa-solid fa-cloud-arrow-up"></i> Unggah Foto Baru
+        </button>
+        <button class="admin-tab" data-tab="tabManage">
+          <i class="fa-solid fa-photo-film"></i> Kelola Foto (<span id="manageCountBadge">0</span>)
+        </button>
+        <button class="admin-tab" data-tab="tabMessages">
+          <i class="fa-solid fa-comments"></i> Kelola Pesan (<span id="messagesCountBadge">0</span>)
+        </button>
+        <button class="admin-tab" data-tab="tabSettings">
+          <i class="fa-solid fa-sliders"></i> Cadangan Data
+        </button>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div class="admin-modal-body">
+
+        <!-- TAB 1: UPLOAD FOTO BARU -->
+        <div class="tab-panel active" id="tabUpload">
+          <form id="uploadMemoryForm" class="upload-form">
+            <div class="upload-grid-layout">
+
+              <!-- Left Column: File Dropzone & Preview -->
+              <div class="dropzone-column">
+                <label class="form-label">Foto Dokumentasi Kenangan</label>
+                <div class="dropzone-box" id="dropzoneBox">
+                  <input type="file" id="photoFileInput" accept="image/*" class="file-input-hidden">
+
+                  <div class="dropzone-prompt" id="dropzonePrompt">
+                    <div class="dropzone-icon"><i class="fa-solid fa-images"></i></div>
+                    <h4>Pilih atau Tarik Foto ke Sini</h4>
+                    <p>Format JPG, PNG, WEBP. Maksimal ukuran resolusi tinggi.</p>
+                    <span class="btn btn-sm btn-outline mt-2">Pilih Berkas Foto</span>
+                  </div>
+
+                  <div class="dropzone-preview hidden" id="dropzonePreview">
+                    <img id="previewImageElement" src="" alt="Pratinjau Foto">
+                    <button type="button" class="btn-change-photo" id="btnRemovePreview" title="Ganti foto">
+                      <i class="fa-solid fa-arrow-rotate-left"></i> Ganti
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Or Photo URL Alternative -->
+                <div class="url-alt-wrapper">
+                  <span class="url-divider">atau gunakan tautan gambar (opsional)</span>
+                  <div class="url-input-group">
+                    <input type="url" id="photoUrlInput" class="form-input"
+                      placeholder="https://images.unsplash.com/...">
+                    <button type="button" class="btn btn-sm btn-outline" id="btnApplyUrl">Muat URL</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column: Metadata Fields -->
+              <div class="metadata-column">
+                <div class="form-group">
+                  <label for="memTitle" class="form-label">Judul Momen / Foto *</label>
+                  <input type="text" id="memTitle" class="form-input"
+                    placeholder="Contoh: Evaluasi Malam Terakhir & Pelukan Haru" required>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group col-half">
+                    <label for="memProker" class="form-label">Nama Program Kerja (Proker) *</label>
+                    <input type="text" id="memProker" class="form-input" placeholder="Contoh: Makrab 2024, Dies Natalis"
+                      list="prokerDatalist" required>
+                    <datalist id="prokerDatalist">
+                      <option value="Makrab Keakraban"></option>
+                      <option value="Laporan Pertanggung Jawaban Osis"></option>
+                      <option value="Evaluasi triwulan"></option>
+                      <option value="Rapat Kerja"></option>
+                      <option value="Musyawarah Besar"></option>
+                      <option value="Latihan Dasar Kepemimpinan"></option>
+                      <option value="PILKETOS"></option>
+                      <option value="Parlemen MPK"></option>
+                      <option value="Pilar MPK"></option>
+                      <option value="MPLS"></option>
+                      <option value="17 Agustus"></option>
+                      <option value="Garda Smansa"></option>
+                      <option value="Hari Pendidikan"></option>
+                      <option value="Maulid Nabi"></option>
+                    </datalist>
+                  </div>
+                  <div class="form-group col-half">
+                    <label for="memDate" class="form-label">Tanggal / Waktu Kegiatan</label>
+                    <input type="date" id="memDate" class="form-input">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="memPeople" class="form-label">Kakak / Pengurus Terkait (Pisahkan dengan koma)</label>
+                  <input type="text" id="memPeople" class="form-input"
+                    placeholder="Contoh: Kak Dika, Kak Sarah, Kak Reza">
+                </div>
+
+                <div class="form-group">
+                  <label for="memStory" class="form-label">Catatan & Cerita di Balik Layar *</label>
+                  <textarea id="memStory" class="form-input textarea-field" rows="4"
+                    placeholder="Tuliskan cerita menarik, tantangan yang dihadapi bersama, atau kalimat apresiasi untuk foto ini..."
+                    required></textarea>
+                </div>
+
+                <div class="form-checkbox-group">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="memFeatured">
+                    <span class="checkmark"></span>
+                    <span class="checkbox-text">Sematkan sebagai Momen Sorotan (Featured)</span>
+                  </label>
+                </div>
+
+                <div class="form-actions mt-3">
+                  <button type="submit" class="btn btn-primary btn-lg" id="btnSubmitMemory">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Simpan ke Ruang Jejak
+                  </button>
+                  <button type="reset" class="btn btn-outline btn-lg" id="btnResetUpload">
+                    Reset Form
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </form>
+        </div>
+
+        <!-- TAB 2: KELOLA DAFTAR FOTO -->
+        <div class="tab-panel" id="tabManage">
+          <div class="manage-toolbar">
+            <div class="search-input-wrapper sm">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="adminSearchPhotos" placeholder="Cari foto berdasarkan judul atau proker...">
+            </div>
+            <div class="manage-stats-pill">
+              Total Foto: <strong id="adminTotalPhotosText">0</strong>
+            </div>
+          </div>
+
+          <div class="manage-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Pratinjau</th>
+                  <th>Judul & Tanggal</th>
+                  <th>Program Kerja</th>
+                  <th>Kakak Terlibat</th>
+                  <th>Sorotan</th>
+                  <th class="text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="adminPhotosTableBody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 3: KELOLA PESAN & KESAN -->
+        <div class="tab-panel" id="tabMessages">
+          <div class="manage-toolbar">
+            <p class="text-muted">Daftar semua pesan apresiasi dan surat kenangan yang dikirim oleh anggota/tamu.</p>
+          </div>
+          <div class="manage-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Pengirim</th>
+                  <th>Untuk Kakak</th>
+                  <th>Isi Pesan</th>
+                  <th>Tanggal</th>
+                  <th class="text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="adminMessagesTableBody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 4: PENGATURAN & BACKUP DATA -->
+        <div class="tab-panel" id="tabSettings">
+          <div class="settings-card-grid">
+            <div class="settings-card">
+              <h4><i class="fa-solid fa-file-export"></i> Cadangkan Data (Ekspor JSON)</h4>
+              <p>Unduh semua data kenangan, foto tersimpan, dan pesan ke dalam berkas cadangan di komputermu.</p>
+              <button class="btn btn-outline mt-2" id="btnExportData">
+                <i class="fa-solid fa-download"></i> Unduh Cadangan JSON
+              </button>
+            </div>
+
+            <div class="settings-card">
+              <h4><i class="fa-solid fa-file-import"></i> Pulihkan Data (Impor JSON)</h4>
+              <p>Muat berkas cadangan JSON yang sebelumnya pernah diunduh.</p>
+              <input type="file" id="importJsonInput" accept=".json" class="file-input-hidden">
+              <button class="btn btn-outline mt-2" id="btnTriggerImport">
+                <i class="fa-solid fa-upload"></i> Pilih Berkas Impor
+              </button>
+            </div>
+
+            <div class="settings-card danger">
+              <h4><i class="fa-solid fa-rotate-left"></i> Pulihkan Kenangan Bawaan</h4>
+              <p>Kembalikan data galeri dan pesan ke contoh awal yang rapi dan elegan.</p>
+              <button class="btn btn-outline-danger mt-2" id="btnResetToDefaults">
+                <i class="fa-solid fa-arrow-rotate-left"></i> Reset ke Data Bawaan
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODAL: LIGHTBOX / DETAIL KENANGAN             -->
+  <!-- ============================================== -->
+  <div class="modal-backdrop" id="detailModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="detail-modal-container">
+      <button class="modal-close-btn" id="closeDetailModal" aria-label="Tutup">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="detail-grid">
+        <div class="detail-media">
+          <img id="detailImg" src="" alt="Detail Momen">
+          <div class="detail-badge-corner" id="detailProkerBadge">Proker</div>
+        </div>
+
+        <div class="detail-info">
+          <div class="detail-meta-top">
+            <span class="detail-date" id="detailDate"><i class="fa-regular fa-calendar"></i> Tanggal</span>
+            <span class="detail-likes-pill" id="detailLikesBtn">
+              <i class="fa-solid fa-heart"></i> <span id="detailLikesCount">0</span> Suka
+            </span>
+          </div>
+
+          <h3 class="detail-title" id="detailTitle">Judul Momen</h3>
+
+          <div class="detail-people-box">
+            <span class="detail-people-label"><i class="fa-solid fa-users"></i> Kakak & Pengurus:</span>
+            <div class="detail-people-tags" id="detailPeopleTags"></div>
+          </div>
+
+          <div class="detail-story-box">
+            <h5 class="story-heading">Cerita di Balik Layar</h5>
+            <p class="detail-story-text" id="detailStory"></p>
+          </div>
+
+          <div class="detail-footer-actions">
+            <button class="btn btn-outline btn-sm" id="btnShareMoment">
+              <i class="fa-solid fa-share-nodes"></i> Bagikan
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODAL: TULIS PESAN / SURAT UNTUK KAKAK         -->
+  <!-- ============================================== -->
+  <div class="modal-backdrop" id="writeMessageModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="envelope-style-modal">
+      <button class="modal-close-btn" id="closeWriteModal" aria-label="Tutup">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="parchment-letter-card">
+        <div class="parchment-header">
+          <span class="parchment-tag">Surat Kasih & Ucapan</span>
+          <h3 class="parchment-title">Torehkan Jejak Kata untuk Kakak</h3>
+          <p class="parchment-sub">Kata-katamu adalah pelipur lelah terbaik bagi kakak pengurus yang telah
+            mendedikasikan energinya.</p>
+        </div>
+
+        <form id="writeMessageForm" class="letter-form">
+          <div class="form-row">
+            <div class="form-group col-half">
+              <label for="msgSenderName" class="form-label">Namamu / Inisial *</label>
+              <input type="text" id="msgSenderName" class="form-input" placeholder="Contoh: Rian (Divisi Acara 24)"
+                required>
+            </div>
+            <div class="form-group col-half">
+              <label for="msgRecipientName" class="form-label">Ditujukan Kepada *</label>
+              <input type="text" id="msgRecipientName" class="form-input" placeholder="Contoh: Kak Zahra / Seluruh BPH"
+                required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="msgProkerRef" class="form-label">Momen / Proker Paling Berkesan Bersama Beliau</label>
+            <input type="text" id="msgProkerRef" class="form-input"
+              placeholder="Contoh: Waktu gladi bersih Makrab & evaluasi tengah malam">
+          </div>
+
+          <div class="form-group">
+            <label for="msgBody" class="form-label">Isi Surat / Ucapan Terima Kasih *</label>
+            <textarea id="msgBody" class="form-input textarea-field" rows="4"
+              placeholder="Tuliskan ucapan terima kasih, kesan berharga, dan doa untuk langkah kakak ke depannya..."
+              required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Pilih Corak Kertas Surat</label>
+            <div class="letter-theme-selector">
+              <label class="theme-choice active">
+                <input type="radio" name="letterTheme" value="parchment" checked>
+                <span class="theme-preview bg-parchment"></span>
+                <span>Klasik</span>
+              </label>
+              <label class="theme-choice">
+                <input type="radio" name="letterTheme" value="sage">
+                <span class="theme-preview bg-sage"></span>
+                <span>Sejuk</span>
+              </label>
+              <label class="theme-choice">
+                <input type="radio" name="letterTheme" value="blush">
+                <span class="theme-preview bg-blush"></span>
+                <span>Hangat</span>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 btn-lg mt-3">
+            <i class="fa-solid fa-paper-plane"></i> Kirim Surat ke Dinding Apresiasi
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+
+</html>
