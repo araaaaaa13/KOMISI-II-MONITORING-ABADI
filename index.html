@@ -659,11 +659,6 @@ function App() {
           </nav>
 
           <div className="nav-actions">
-            <div className={`cloud-status-badge ${cloudStatus}`}>
-              <span className="cloud-dot"></span>
-              <span>{cloudStatus === 'connected' ? 'Cloud Aktif' : cloudStatus === 'syncing' ? 'Sinkronisasi...' : 'Mode Lokal'}</span>
-            </div>
-
             <button className="btn btn-outline" onClick={() => setIsWriteModalOpen(true)}>
               <i className="fa-solid fa-feather-pointed"></i> Tulis Pesan
             </button>
@@ -688,15 +683,15 @@ function App() {
       {/* Mobile Drawer */}
       <div className={`mobile-drawer ${mobileDrawerOpen ? 'open' : ''}`}>
         <div className="mobile-drawer-content">
-          <div className="mobile-cloud-wrapper">
-            <div className={`cloud-status-badge mobile-cloud-badge ${cloudStatus}`}>
-              <span className="cloud-dot"></span>
-              <span>{cloudStatus === 'connected' ? 'Cloud Aktif' : cloudStatus === 'syncing' ? 'Sinkronisasi...' : 'Mode Lokal'}</span>
-            </div>
-          </div>
-          <a href="#galeri" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>Galeri Kenangan</a>
-          <a href="#linimasa" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>Linimasa Proker</a>
-          <a href="#pesan" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>Surat & Pesan</a>
+          <a href="#galeri" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>
+            <i className="fa-regular fa-image"></i> Galeri Kenangan
+          </a>
+          <a href="#linimasa" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>
+            <i className="fa-solid fa-timeline"></i> Linimasa Proker
+          </a>
+          <a href="#pesan" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>
+            <i className="fa-regular fa-envelope"></i> Surat & Pesan
+          </a>
           <hr className="drawer-divider" />
           <button className="btn btn-outline w-100 mb-2" onClick={() => { setMobileDrawerOpen(false); setIsWriteModalOpen(true); }}>
             <i className="fa-solid fa-feather-pointed"></i> Tulis Pesan

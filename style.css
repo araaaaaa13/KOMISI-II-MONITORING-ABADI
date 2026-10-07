@@ -282,93 +282,42 @@ h1, h2, h3, h4, .serif-font {
   gap: 0.85rem;
 }
 
-/* Cloud Status Badge */
-.cloud-status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.4rem 0.8rem;
-  border-radius: 999px;
-  background: rgba(30, 27, 24, 0.75);
-  border: 1px solid var(--border-medium);
-  font-size: 0.76rem;
-  font-weight: 500;
-  color: var(--text-cream-muted);
-  user-select: none;
-  transition: all var(--transition-smooth);
-}
-
-.cloud-status-badge.connected {
-  border-color: rgba(16, 185, 129, 0.35);
-  color: var(--text-cream-secondary);
-}
-
-.cloud-status-badge.offline {
-  border-color: rgba(245, 158, 11, 0.35);
-}
-
-.cloud-dot {
-  width: 7.5px;
-  height: 7.5px;
-  border-radius: 50%;
-  background-color: #94a3b8;
-  display: inline-block;
-  flex-shrink: 0;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.cloud-status-badge.connected .cloud-dot {
-  background-color: #10b981;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
-}
-
-.cloud-status-badge.syncing .cloud-dot {
-  background-color: #38bdf8;
-  box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
-  animation: cloudPulse 1.2s infinite;
-}
-
-.cloud-status-badge.offline .cloud-dot {
-  background-color: #f59e0b;
-  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
-}
-
-@keyframes cloudPulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.35); opacity: 0.6; }
-}
-
-.mobile-cloud-wrapper {
-  margin-bottom: 1rem;
-  padding-bottom: 0.85rem;
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.mobile-cloud-badge {
-  display: flex;
-  width: fit-content;
-}
-
 .mobile-toggle {
   display: none;
-  background: transparent;
-  border: none;
-  color: var(--text-cream-primary);
-  font-size: 1.4rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--accent-gold);
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
   cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.mobile-toggle:hover {
+  background: rgba(212, 175, 55, 0.12);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold-hover);
 }
 
 /* Mobile Drawer */
 .mobile-drawer {
   display: none;
   position: fixed;
-  top: 60px;
+  top: 62px;
   left: 0;
   width: 100%;
-  background: var(--bg-surface);
-  border-bottom: 1px solid var(--border-medium);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-lg);
+  max-width: 100vw;
+  background: rgba(27, 25, 24, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-gold);
+  padding: 1.5rem 1.25rem 2rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
   z-index: 799;
 }
 
@@ -377,19 +326,28 @@ h1, h2, h3, h4, .serif-font {
 }
 
 .mobile-nav-link {
-  display: block;
-  padding: 0.75rem 0;
-  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   color: var(--text-cream-primary);
   text-decoration: none;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.85rem 0.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+  transition: color var(--transition-fast), padding-left var(--transition-fast);
+}
+
+.mobile-nav-link:hover {
+  color: var(--accent-gold);
+  padding-left: 0.75rem;
 }
 
 .drawer-divider {
   border: 0;
   height: 1px;
   background: var(--border-subtle);
-  margin: 1rem 0;
+  margin: 1.2rem 0;
 }
 
 /* ===================================================================
@@ -2455,8 +2413,11 @@ h1, h2, h3, h4, .serif-font {
   .nav-links {
     display: none;
   }
+  .nav-actions {
+    display: none;
+  }
   .mobile-toggle {
-    display: block;
+    display: inline-flex;
   }
 }
 
@@ -2679,6 +2640,19 @@ h1, h2, h3, h4, .serif-font {
 }
 
 @media (max-width: 480px) {
+  .nav-container {
+    padding: 0.75rem 1rem;
+  }
+
+  .brand-title {
+    font-size: 1.3rem;
+  }
+
+  .brand-sub {
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+  }
+
   .container {
     padding: 0 0.9rem;
   }
