@@ -8,74 +8,8 @@
 // ============================================================================
 // 1. DATA DEFAULT (KENANGAN AWAL YANG ELEGAN & BERMAKNA)
 // ============================================================================
-const DEFAULT_MEMORIES = [
-  {
-    id: "mem-1",
-    title: "Malam Puncak Makrab & Lingkaran Api Unggun",
-    proker: "Makrab Keakraban 2024",
-    date: "2024-10-14",
-    image: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1200&q=80",
-    people: ["Kak Rendy (Ketua)", "Kak Zahra (Sekretaris)", "Kak Bima (Acara)"],
-    story: "Malam ketika semua rasa canggung antarangkatan melebur. Kak Rendy dan Kak Zahra membagikan cerita jatuh bangun organisasi beberapa tahun ke belakang. Di depan api unggun, kami menyadari bahwa menjadi bagian dari organisasi ini bukan sekadar menjalankan proker, tapi menemukan keluarga kedua.",
-    likes: 42,
-    featured: true
-  },
-  {
-    id: "mem-2",
-    title: "Gladi Bersih H-1 Seminar Nasional & Kepanikan Sound System",
-    proker: "Seminar Nasional Teknologi",
-    date: "2024-11-02",
-    image: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=1200&q=80",
-    people: ["Kak Dika (Perkap)", "Kak Sarah (Humas)", "Kak Kevin (Bendahara)"],
-    story: "Pukul 23.30 di auditorium kampus. Sound system mendadak berdengung keras dan layar proyektor padam. Panik luar biasa, tetapi Kak Dika tetap tenang memeriksa setiap kabel dan Kak Sarah menyemangati divisi kami dengan membawa sekotak martabak hangat. Keteladanan ketenangan mereka menyelamatkan hari esoknya.",
-    likes: 38,
-    featured: true
-  },
-  {
-    id: "mem-3",
-    title: "Tawa di Tengah Lumpur Bakti Sosial Desa Pesisir",
-    proker: "Bakti Sosial Masyarakat",
-    date: "2024-12-18",
-    image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80",
-    people: ["Kak Fathir (Koord Lapangan)", "Kak Nia (Konsumsi)"],
-    story: "Hujan lebat mengguyur saat pembagian bantuan logistik ke balai desa. Sepatu kami basah kuyup penuh tanah liat, namun senyum anak-anak desa dan semangat Kak Fathir yang tak pernah mengeluh membuat rasa dingin itu sama sekali hilang.",
-    likes: 29,
-    featured: false
-  },
-  {
-    id: "mem-4",
-    title: "Revisi Proposal Ke-12 di Gazebo Senja Kampus",
-    proker: "Dies Natalis Organisasi",
-    date: "2025-01-20",
-    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
-    people: ["Kak Ilham (Kestari)", "Kak Tiara (Acara)"],
-    story: "Proposal yang dicoret berkali-kali oleh birokrasi kampus. Kami sempat ingin menyerah, tapi Kak Ilham duduk bersama kami berjam-jam, membedah setiap paragraf hingga tuntas sambil bercanda agar suasana tidak tegang. Beliau mengajarkan arti ketekunan yang sesungguhnya.",
-    likes: 51,
-    featured: true
-  },
-  {
-    id: "mem-5",
-    title: "Momen Haru Evaluasi Akhir Sidang Pleno",
-    proker: "Musyawarah Besar & LPJ",
-    date: "2025-03-05",
-    image: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=1200&q=80",
-    people: ["Kak Rendy", "Kak Zahra", "Kak Gilang (BPO)"],
-    story: "Saat palu sidang LPJ diketuk tanda kepengurusan selesai. Tangis haru pecah di ruang sidang. Terima kasih kakak-kakak yang sudah meluangkan waktu kuliah dan istirahatnya demi membimbing kami. Jejak langkah kalian akan selalu kami teruskan.",
-    likes: 64,
-    featured: true
-  },
-  {
-    id: "mem-6",
-    title: "Makan Malam Bersama Setelah Sidang Akhir Sukses",
-    proker: "Syukuran Demisioner",
-    date: "2025-03-12",
-    image: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&q=80",
-    people: ["Seluruh BPH & Staff Muda"],
-    story: "Malam syukuran sederhana di warung tenda favorit seberang kampus. Tidak ada lagi beban rundown atau revisi LPJ, hanya gelak tawa dan ucapan terima kasih tulus dari hati ke hati.",
-    likes: 33,
-    featured: false
-  }
-];
+const DEFAULT_MEMORIES = [];
+
 
 const DEFAULT_TIMELINE = [
   {
@@ -267,10 +201,9 @@ async function initData() {
   // Load Memories from local storage first for instant render
   const storedMemories = await loadMemoriesFromDB();
   if (storedMemories && storedMemories.length > 0) {
-    appState.memories = storedMemories;
+    appState.memories = storedMemories.filter(m => m && !['mem-1', 'mem-2', 'mem-3', 'mem-4', 'mem-5', 'mem-6'].includes(m.id));
   } else {
-    appState.memories = [...DEFAULT_MEMORIES];
-    await saveMemoriesToDB(appState.memories);
+    appState.memories = [];
   }
 
   // Load Messages from local storage first
@@ -344,6 +277,7 @@ function setupFirebaseListeners() {
     const data = snapshot.val();
     if (data) {
       let list = Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
+      list = list.filter(m => m && !['mem-1', 'mem-2', 'mem-3', 'mem-4', 'mem-5', 'mem-6'].includes(m.id));
       // Sort memories by date descending
       list.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
       appState.memories = list;
@@ -353,8 +287,12 @@ function setupFirebaseListeners() {
       renderGallery();
       renderAdminPhotosTable();
     } else {
-      // If Firebase database node is empty, seed with default memories
-      seedDefaultMemoriesToFirebase();
+      appState.memories = [];
+      saveMemoriesToDB([]);
+      updateStats();
+      renderFilterChips();
+      renderGallery();
+      renderAdminPhotosTable();
     }
   }, (err) => {
     console.warn('Firebase memories listener error:', err);
@@ -382,17 +320,7 @@ function setupFirebaseListeners() {
 
 // Seed default data to Firebase Realtime Database
 async function seedDefaultMemoriesToFirebase() {
-  if (!db) return;
-  try {
-    const updates = {};
-    DEFAULT_MEMORIES.forEach(m => {
-      updates[m.id] = m;
-    });
-    await db.ref('memories').set(updates);
-    console.log('Default memories successfully seeded to Firebase.');
-  } catch (err) {
-    console.warn('Gagal seeding memories ke Firebase:', err);
-  }
+  // Dummy memories have been removed
 }
 
 async function seedDefaultMessagesToFirebase() {
