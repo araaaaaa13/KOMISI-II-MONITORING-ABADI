@@ -607,11 +607,6 @@ function App() {
           </nav>
 
           <div className="nav-actions">
-            <div className={`cloud-status-badge ${cloudStatus}`}>
-              <span className="cloud-dot"></span>
-              <span>{cloudStatus === 'connected' ? 'Cloud Aktif' : cloudStatus === 'syncing' ? 'Sinkronisasi...' : 'Mode Lokal'}</span>
-            </div>
-
             <button className="btn btn-outline" onClick={() => setIsWriteModalOpen(true)}>
               <i className="fa-solid fa-feather-pointed"></i> Tulis Pesan
             </button>
@@ -636,15 +631,15 @@ function App() {
       {/* Mobile Drawer */}
       <div className={`mobile-drawer ${mobileDrawerOpen ? 'open' : ''}`}>
         <div className="mobile-drawer-content">
-          <div className="mobile-cloud-wrapper">
-            <div className={`cloud-status-badge mobile-cloud-badge ${cloudStatus}`}>
-              <span className="cloud-dot"></span>
-              <span>{cloudStatus === 'connected' ? 'Cloud Aktif' : cloudStatus === 'syncing' ? 'Sinkronisasi...' : 'Mode Lokal'}</span>
-            </div>
-          </div>
-          <a href="#galeri" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>Galeri Kenangan</a>
-          <a href="#linimasa" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>Linimasa Proker</a>
-          <a href="#pesan" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>Surat & Pesan</a>
+          <a href="#galeri" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>
+            <i className="fa-regular fa-image"></i> Galeri Kenangan
+          </a>
+          <a href="#linimasa" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>
+            <i className="fa-solid fa-timeline"></i> Linimasa Proker
+          </a>
+          <a href="#pesan" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>
+            <i className="fa-regular fa-envelope"></i> Surat & Pesan
+          </a>
           <hr className="drawer-divider" />
           <button className="btn btn-outline w-100 mb-2" onClick={() => { setMobileDrawerOpen(false); setIsWriteModalOpen(true); }}>
             <i className="fa-solid fa-feather-pointed"></i> Tulis Pesan
@@ -792,6 +787,20 @@ function App() {
                           <span className="featured-pin">
                             <i className="fa-solid fa-thumbtack"></i> Sorotan
                           </span>
+                        )}
+                        {isAdmin && (
+                          <button
+                            type="button"
+                            className="admin-card-delete-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteMemory(m.id);
+                            }}
+                            title="Hapus foto ini (Admin)"
+                            aria-label={`Hapus foto ${m.title}`}
+                          >
+                            <i className="fa-solid fa-trash-can"></i>
+                          </button>
                         )}
                       </div>
                       <div className="memory-body">
@@ -989,7 +998,12 @@ function App() {
         <DetailModal
           memory={selectedDetailMemory}
           isLiked={likedMemories.has(selectedDetailMemory.id)}
+          isAdmin={isAdmin}
           onClose={() => setSelectedDetailMemory(null)}
+          onDeleteMemory={(id) => {
+            handleDeleteMemory(id);
+            setSelectedDetailMemory(null);
+          }}
           onToggleLike={() => toggleLike(selectedDetailMemory.id)}
           onShare={() => {
             if (navigator.share) {
@@ -1227,7 +1241,7 @@ function AdminModal({
         canvas.height = h;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, w, h);
-        setPhotoPreview(canvas.toDataURL('image/jpeg', 0.85));
+        setPhotoPreview(canvas.toDataURL('image/webp', 0.4));
       };
       img.src = e.target.result;
     };
@@ -1692,7 +1706,7 @@ function AdminModal({
 // ============================================================================
 // SUB-COMPONENT: DetailModal (Lightbox)
 // ============================================================================
-function DetailModal({ memory, isLiked, onClose, onToggleLike, onShare }) {
+function DetailModal({ memory, isLiked, isAdmin, onClose, onDeleteMemory, onToggleLike, onShare }) {
   const peopleList = Array.isArray(memory.people) ? memory.people : (memory.people ? memory.people.split(',') : []);
 
   return (
@@ -1746,6 +1760,16 @@ function DetailModal({ memory, isLiked, onClose, onToggleLike, onShare }) {
               <button className="btn btn-outline btn-sm" onClick={onShare}>
                 <i className="fa-solid fa-share-nodes"></i> Bagikan
               </button>
+              {isAdmin && (
+                <button
+                  type="button"
+                  className="btn btn-outline-danger btn-sm"
+                  onClick={() => onDeleteMemory(memory.id)}
+                  title="Hapus foto ini (Admin)"
+                >
+                  <i className="fa-regular fa-trash-can"></i> Hapus Foto
+                </button>
+              )}
             </div>
           </div>
         </div>
