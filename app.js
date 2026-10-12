@@ -1382,7 +1382,7 @@ function initWriteMessageModal() {
   });
 
   if (form) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const sender = document.getElementById('msgSenderName').value.trim();
       const recipient = document.getElementById('msgRecipientName').value.trim();
