@@ -35,8 +35,8 @@ const DEFAULT_TIMELINE = [
 const DEFAULT_MESSAGES = [
   {
     id: "msg-1",
-    sender: "Arya (Staff Muda Acara 24)",
-    recipient: "Kak Rendy & Kak Zahra",
+    sender: "Nur Asyura Malik",
+    recipient: "Kak Rayhan (Koordinator Komisi II)",
     prokerRef: "Makrab Keakraban & Seminar",
     body: "Terima kasih banyak sudah sabar banget menghadapi kami yang sering salah dan bingung di awal. Bimbingan kakak berdua membuat kami berani memimpin. Sukses skripsi dan kariernya ke depan, Kak!",
     date: "15 Maret 2025",
