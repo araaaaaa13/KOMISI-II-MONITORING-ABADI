@@ -36,7 +36,8 @@
 <body class="theme-warm">
   <!-- React App Root Container -->
   <div id="root">
-    <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;color:#d4af37;font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;gap:0.75rem;">
+    <div
+      style="display:flex;align-items:center;justify-content:center;min-height:100vh;color:#d4af37;font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;gap:0.75rem;">
       <i class="fa-solid fa-circle-notch fa-spin"></i>
       <span>Memuat Ruang Jejak (React 18)...</span>
     </div>
@@ -50,1908 +51,1908 @@
 
   <!-- React Application Component Script (Babel Standalone JSX) -->
   <script type="text/babel">
-const { useState, useEffect, useMemo, useCallback, useRef } = React;
+    const { useState, useEffect, useMemo, useCallback, useRef } = React;
 
-// ============================================================================
-// 1. DATA DEFAULT & FIREBASE CONFIG
-// ============================================================================
-const firebaseConfig = {
-  apiKey: "AIzaSyAzaSHpYIXHXu8zF8C1brppHwhu3XgCNEA",
-  authDomain: "webkomtwo-3d431.firebaseapp.com",
-  databaseURL: "https://webkomtwo-3d431-default-rtdb.firebaseio.com",
-  projectId: "webkomtwo-3d431",
-  storageBucket: "webkomtwo-3d431.firebasestorage.app",
-  messagingSenderId: "773122461200",
-  appId: "1:773122461200:web:bd2a7ac2fc9db9842ec495",
-  measurementId: "G-C2CRSPLF34"
-};
+    // ============================================================================
+    // 1. DATA DEFAULT & FIREBASE CONFIG
+    // ============================================================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyAzaSHpYIXHXu8zF8C1brppHwhu3XgCNEA",
+      authDomain: "webkomtwo-3d431.firebaseapp.com",
+      databaseURL: "https://webkomtwo-3d431-default-rtdb.firebaseio.com",
+      projectId: "webkomtwo-3d431",
+      storageBucket: "webkomtwo-3d431.firebasestorage.app",
+      messagingSenderId: "773122461200",
+      appId: "1:773122461200:web:bd2a7ac2fc9db9842ec495",
+      measurementId: "G-C2CRSPLF34"
+    };
 
-const DEFAULT_MEMORIES = [];
+    const DEFAULT_MEMORIES = [];
 
 
-const DEFAULT_TIMELINE = [
-  {
-    period: "Fase 1 — Awal Periode",
-    title: "Mukilas, CPO dan LPJ",
-    desc: "Masa orientasi di mana kami masih canggung menyapa kakak pengurus. Kakak mengenalkan esensi organisasi bukan sebagai hierarki, melainkan ruang tumbuh bersama.",
-    quote: "“Awal dari sebuah perjalanan, langkah kecil untuk perubahan besar. Mari tumbuh, berproses, dan berdampak bersama.”"
-  },
-  {
-    period: "Fase 2 — Pertengahan Periode",
-    title: "Evaluasi, Pilar dan Pilketos",
-    desc: "“Setengah perjalanan telah terlewati, proker besar telah terlaksana. Ini bukan akhir, melainkan bukti bahwa kerja sama dan komitmen mampu membawa kita melangkah lebih jauh.”",
-    quote: "“Proker yang sukses itu bonus, panitia yang tetap solid dan tersenyum adalah prestasi utama.”"
-  },
-  {
-    period: "Fase 3 — Akhir Kepengurusan",
-    title: "Pembekalan",
-    desc: "Pertanggungjawaban seluruh program kerja. Air mata haru dan pelukan hangat mengiringi purnatugas kakak-kakak pengurus sebelum melangkah ke jenjang selanjutnya.",
-    quote: "“Perjalanan kami selesai di atas kertas, tapi persaudaraan ini abadi selamanya.”"
-  }
-];
-
-const DEFAULT_MESSAGES = [
-  {
-    id: "msg-1",
-    sender: "Nur Asyura Malik",
-    recipient: "Kak Rayhan (Koordinator Komisi II)",
-    prokerRef: "Makrab Keakraban & Seminar",
-    body: "Terima kasih banyak sudah sabar banget menghadapi kami yang sering salah dan bingung di awal. Bimbingan kakak berdua membuat kami berani memimpin. Sukses skripsi dan kariernya ke depan, Kak!",
-    date: "15 Maret 2025",
-    theme: "parchment"
-  },
-  {
-    id: "msg-2",
-    sender: "Dina Nur Afifa",
-    recipient: "Kak Sasaa",
-    prokerRef: "Kerjasama Sponsorship Seminar Nasional",
-    body: "Kak Sarah adalah role model terbaik! Terima kasih selalu mendampingi saat audiensi ke pihak luar dan mengajari cara negosiasi yang elegan. Bakal kangen meeting bareng sambil makan gorengan.",
-    date: "18 Maret 2025",
-    theme: "sage"
-  },
-  {
-    id: "msg-3",
-    sender: "Safwah Salsabilah & Nur Aziizah",
-    recipient: "Kak Fara",
-    prokerRef: "Bakti Sosial & Perlengkapan Panggung",
-    body: "Untuk kakak-kakak perkap yang selalu pulang paling akhir dan datang paling awal: energi kalian luar biasa. Terima kasih sudah mengajarkan kami arti kerja ikhlas tanpa sorotan kamera.",
-    date: "20 Maret 2025",
-    theme: "blush"
-  }
-];
-
-// Helper Functions
-function formatDateIndonesian(dateStr) {
-  if (!dateStr) return '';
-  try {
-    const months = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-    ];
-    const parts = dateStr.split('-');
-    if (parts.length === 3) {
-      const day = parseInt(parts[2], 10);
-      const month = months[parseInt(parts[1], 10) - 1];
-      const year = parts[0];
-      return `${day} ${month} ${year}`;
-    }
-    return dateStr;
-  } catch (e) {
-    return dateStr;
-  }
-}
-
-// Synthesizer Audio Helpers
-let audioCtx = null;
-let ambientInterval = null;
-
-function playPaperRustleSound() {
-  try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(320, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.35);
-    gain.gain.setValueAtTime(0.08, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.36);
-  } catch (e) {}
-}
-
-function playWaxBreakSound() {
-  try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(580, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(240, ctx.currentTime + 0.2);
-    gain.gain.setValueAtTime(0.12, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.22);
-  } catch (e) {}
-}
-
-// ============================================================================
-// MAIN REACT COMPONENT: App
-// ============================================================================
-function App() {
-  // State
-  const [isMemoriesLoading, setIsMemoriesLoading] = useState(true);
-  const [memories, setMemories] = useState(() => {
-    try {
-      const cached = localStorage.getItem('rj_memories_fallback');
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed)) {
-          return parsed.filter(m => m && !['mem-1', 'mem-2', 'mem-3', 'mem-4', 'mem-5', 'mem-6'].includes(m.id));
-        }
+    const DEFAULT_TIMELINE = [
+      {
+        period: "Fase 1 — Awal Periode",
+        title: "Mukilas, CPO dan LPJ",
+        desc: "Masa orientasi di mana kami masih canggung menyapa kakak pengurus. Kakak mengenalkan esensi organisasi bukan sebagai hierarki, melainkan ruang tumbuh bersama.",
+        quote: "“Awal dari sebuah perjalanan, langkah kecil untuk perubahan besar. Mari tumbuh, berproses, dan berdampak bersama.”"
+      },
+      {
+        period: "Fase 2 — Pertengahan Periode",
+        title: "Evaluasi, Pilar dan Pilketos",
+        desc: "“Setengah perjalanan telah terlewati, proker besar telah terlaksana. Ini bukan akhir, melainkan bukti bahwa kerja sama dan komitmen mampu membawa kita melangkah lebih jauh.”",
+        quote: "“Proker yang sukses itu bonus, panitia yang tetap solid dan tersenyum adalah prestasi utama.”"
+      },
+      {
+        period: "Fase 3 — Akhir Kepengurusan",
+        title: "Pembekalan",
+        desc: "Pertanggungjawaban seluruh program kerja. Air mata haru dan pelukan hangat mengiringi purnatugas kakak-kakak pengurus sebelum melangkah ke jenjang selanjutnya.",
+        quote: "“Perjalanan kami selesai di atas kertas, tapi persaudaraan ini abadi selamanya.”"
       }
-      return [];
-    } catch (e) {
-      return [];
-    }
-  });
+    ];
 
-  const [messages, setMessages] = useState(() => {
-    try {
-      const cached = localStorage.getItem('rj_messages');
-      return cached ? JSON.parse(cached) : DEFAULT_MESSAGES;
-    } catch (e) {
-      return DEFAULT_MESSAGES;
-    }
-  });
+    const DEFAULT_MESSAGES = [
+      {
+        id: "msg-1",
+        sender: "Nur Asyura Malik",
+        recipient: "Kak Rayhan (Koordinator Komisi II)",
+        prokerRef: "Makrab Keakraban & Seminar",
+        body: "Terima kasih banyak sudah sabar banget menghadapi kami yang sering salah dan bingung di awal. Bimbingan kakak berdua membuat kami berani memimpin. Sukses skripsi dan kariernya ke depan, Kak!",
+        date: "15 Maret 2025",
+        theme: "parchment"
+      },
+      {
+        id: "msg-2",
+        sender: "Dina Nur Afifa",
+        recipient: "Kak Sasaa",
+        prokerRef: "Kerjasama Sponsorship Seminar Nasional",
+        body: "Kak Sarah adalah role model terbaik! Terima kasih selalu mendampingi saat audiensi ke pihak luar dan mengajari cara negosiasi yang elegan. Bakal kangen meeting bareng sambil makan gorengan.",
+        date: "18 Maret 2025",
+        theme: "sage"
+      },
+      {
+        id: "msg-3",
+        sender: "Safwah Salsabilah & Nur Aziizah",
+        recipient: "Kak Fara",
+        prokerRef: "Bakti Sosial & Perlengkapan Panggung",
+        body: "Untuk kakak-kakak perkap yang selalu pulang paling akhir dan datang paling awal: energi kalian luar biasa. Terima kasih sudah mengajarkan kami arti kerja ikhlas tanpa sorotan kamera.",
+        date: "20 Maret 2025",
+        theme: "blush"
+      }
+    ];
 
-  const [isAdmin, setIsAdmin] = useState(() => {
-    return sessionStorage.getItem('rj_is_admin') === 'true';
-  });
-
-  const [likedMemories, setLikedMemories] = useState(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('rj_likes') || '[]');
-      return new Set(saved);
-    } catch (e) {
-      return new Set();
-    }
-  });
-
-  const [activeFilter, setActiveFilter] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [cloudStatus, setCloudStatus] = useState('syncing'); // 'connected', 'syncing', 'offline'
-  const [toasts, setToasts] = useState([]);
-  const [isAmbientPlaying, setIsAmbientPlaying] = useState(false);
-
-  // Modals
-  const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
-  const [isEnvelopeUnfolded, setIsEnvelopeUnfolded] = useState(false);
-  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
-  const [adminActiveTab, setAdminActiveTab] = useState('tabUpload');
-  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
-  const [selectedDetailMemory, setSelectedDetailMemory] = useState(null);
-  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-
-  // Firebase DB ref
-  const dbRef = useRef(null);
-
-  // Show Toast Helper
-  const showToast = useCallback((message, type = 'info') => {
-    const id = Date.now() + Math.random();
-    setToasts(prev => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts(prev => prev.filter(t => t.id !== id));
-    }, 3500);
-  }, []);
-
-  // Initialize Firebase RTDB
-  useEffect(() => {
-    if (typeof firebase !== 'undefined') {
+    // Helper Functions
+    function formatDateIndonesian(dateStr) {
+      if (!dateStr) return '';
       try {
-        if (!firebase.apps || !firebase.apps.length) {
-          firebase.initializeApp(firebaseConfig);
+        const months = [
+          'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+          'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+          const day = parseInt(parts[2], 10);
+          const month = months[parseInt(parts[1], 10) - 1];
+          const year = parts[0];
+          return `${day} ${month} ${year}`;
         }
-        const database = firebase.database();
-        dbRef.current = database;
+        return dateStr;
+      } catch (e) {
+        return dateStr;
+      }
+    }
 
-        if (firebase.analytics) {
-          try { firebase.analytics(); } catch (e) {}
-        }
+    // Synthesizer Audio Helpers
+    let audioCtx = null;
+    let ambientInterval = null;
 
-        // Connection listener
-        database.ref('.info/connected').on('value', snap => {
-          if (snap.val() === true) {
-            setCloudStatus('connected');
-          } else {
-            setCloudStatus('offline');
-          }
-        });
+    function playPaperRustleSound() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(320, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.35);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.36);
+      } catch (e) { }
+    }
 
-        // Clean legacy local storage fallback if it had dummy photos
+    function playWaxBreakSound() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(580, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(240, ctx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.22);
+      } catch (e) { }
+    }
+
+    // ============================================================================
+    // MAIN REACT COMPONENT: App
+    // ============================================================================
+    function App() {
+      // State
+      const [isMemoriesLoading, setIsMemoriesLoading] = useState(true);
+      const [memories, setMemories] = useState(() => {
         try {
           const cached = localStorage.getItem('rj_memories_fallback');
           if (cached) {
             const parsed = JSON.parse(cached);
             if (Array.isArray(parsed)) {
-              const cleaned = parsed.filter(m => m && !['mem-1', 'mem-2', 'mem-3', 'mem-4', 'mem-5', 'mem-6'].includes(m.id));
-              localStorage.setItem('rj_memories_fallback', JSON.stringify(cleaned));
+              return parsed.filter(m => m && !['mem-1', 'mem-2', 'mem-3', 'mem-4', 'mem-5', 'mem-6'].includes(m.id));
             }
           }
-        } catch (e) {}
-
-        // Realtime memories listener
-        database.ref('memories').on('value', snapshot => {
-          const data = snapshot.val();
-          if (data) {
-            let list = Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
-            list = list.filter(m => m && !['mem-1', 'mem-2', 'mem-3', 'mem-4', 'mem-5', 'mem-6'].includes(m.id));
-            list.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-            setMemories(list);
-            try {
-              localStorage.setItem('rj_memories_fallback', JSON.stringify(list));
-            } catch (e) {}
-          } else {
-            setMemories([]);
-            try {
-              localStorage.removeItem('rj_memories_fallback');
-            } catch (e) {}
-          }
-          setIsMemoriesLoading(false);
-        }, (err) => {
-          console.warn('Firebase memories fetch error:', err);
-          setIsMemoriesLoading(false);
-        });
-
-        // Realtime messages listener
-        database.ref('messages').on('value', snapshot => {
-          const data = snapshot.val();
-          if (data) {
-            let list = Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
-            list.sort((a, b) => (b.id > a.id ? 1 : -1));
-            setMessages(list);
-            try {
-              localStorage.setItem('rj_messages', JSON.stringify(list));
-            } catch (e) {}
-          }
-        });
-
-      } catch (err) {
-        console.warn('Firebase init error:', err);
-        setCloudStatus('offline');
-      }
-    } else {
-      setCloudStatus('offline');
-    }
-  }, []);
-
-  // Sync likes to localStorage
-  const saveLikes = useCallback((newSet) => {
-    try {
-      localStorage.setItem('rj_likes', JSON.stringify(Array.from(newSet)));
-    } catch (e) {}
-  }, []);
-
-  // Like Toggle Handler
-  const toggleLike = useCallback((id) => {
-    const isLiked = likedMemories.has(id);
-    const nextLiked = new Set(likedMemories);
-
-    if (isLiked) {
-      nextLiked.delete(id);
-    } else {
-      nextLiked.add(id);
-      showToast('Terima kasih apresiasinya untuk momen ini! ❤️', 'success');
-    }
-
-    setLikedMemories(nextLiked);
-    saveLikes(nextLiked);
-
-    // Optimistic UI update
-    setMemories(prev => prev.map(m => {
-      if (m.id === id) {
-        return {
-          ...m,
-          likes: isLiked ? Math.max(0, (m.likes || 1) - 1) : (m.likes || 0) + 1
-        };
-      }
-      return m;
-    }));
-
-    // Firebase transaction
-    if (dbRef.current) {
-      dbRef.current.ref('memories/' + id + '/likes').transaction(curr => {
-        const val = typeof curr === 'number' ? curr : 0;
-        return isLiked ? Math.max(0, val - 1) : val + 1;
+          return [];
+        } catch (e) {
+          return [];
+        }
       });
-    }
-  }, [likedMemories, saveLikes, showToast]);
 
-  // Ambient Nostalgia Synthesizer
-  const toggleAmbientSound = useCallback(() => {
-    if (!audioCtx) {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new AudioCtx();
-    }
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
+      const [messages, setMessages] = useState(() => {
+        try {
+          const cached = localStorage.getItem('rj_messages');
+          return cached ? JSON.parse(cached) : DEFAULT_MESSAGES;
+        } catch (e) {
+          return DEFAULT_MESSAGES;
+        }
+      });
 
-    if (isAmbientPlaying) {
-      if (ambientInterval) {
-        clearInterval(ambientInterval);
-        ambientInterval = null;
-      }
-      setIsAmbientPlaying(false);
-      showToast('Suasana nostalgia dijeda.', 'info');
-    } else {
-      setIsAmbientPlaying(true);
-      showToast('Suasana nostalgia berputar 🎵', 'info');
+      const [isAdmin, setIsAdmin] = useState(() => {
+        return sessionStorage.getItem('rj_is_admin') === 'true';
+      });
 
-      // Chords sequence
-      const chords = [
-        [261.63, 329.63, 392.00, 493.88], // Cmaj7
-        [220.00, 261.63, 329.63, 392.00], // Am7
-        [174.61, 220.00, 261.63, 329.63], // Fmaj7
-        [196.00, 246.94, 293.66, 349.23]  // G7
-      ];
-      let chordIndex = 0;
+      const [likedMemories, setLikedMemories] = useState(() => {
+        try {
+          const saved = JSON.parse(localStorage.getItem('rj_likes') || '[]');
+          return new Set(saved);
+        } catch (e) {
+          return new Set();
+        }
+      });
 
-      const playChord = () => {
-        if (!audioCtx) return;
-        const notes = chords[chordIndex % chords.length];
-        chordIndex++;
-        notes.forEach((freq, i) => {
+      const [activeFilter, setActiveFilter] = useState('all');
+      const [searchQuery, setSearchQuery] = useState('');
+      const [cloudStatus, setCloudStatus] = useState('syncing'); // 'connected', 'syncing', 'offline'
+      const [toasts, setToasts] = useState([]);
+      const [isAmbientPlaying, setIsAmbientPlaying] = useState(false);
+
+      // Modals
+      const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
+      const [isEnvelopeUnfolded, setIsEnvelopeUnfolded] = useState(false);
+      const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+      const [adminActiveTab, setAdminActiveTab] = useState('tabUpload');
+      const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
+      const [selectedDetailMemory, setSelectedDetailMemory] = useState(null);
+      const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+
+      // Firebase DB ref
+      const dbRef = useRef(null);
+
+      // Show Toast Helper
+      const showToast = useCallback((message, type = 'info') => {
+        const id = Date.now() + Math.random();
+        setToasts(prev => [...prev, { id, message, type }]);
+        setTimeout(() => {
+          setToasts(prev => prev.filter(t => t.id !== id));
+        }, 3500);
+      }, []);
+
+      // Initialize Firebase RTDB
+      useEffect(() => {
+        if (typeof firebase !== 'undefined') {
           try {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.08);
-            gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.02, audioCtx.currentTime + 1.2 + i * 0.1);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 4.2);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(audioCtx.currentTime + i * 0.08);
-            osc.stop(audioCtx.currentTime + 4.5);
-          } catch (e) {}
-        });
+            if (!firebase.apps || !firebase.apps.length) {
+              firebase.initializeApp(firebaseConfig);
+            }
+            const database = firebase.database();
+            dbRef.current = database;
+
+            if (firebase.analytics) {
+              try { firebase.analytics(); } catch (e) { }
+            }
+
+            // Connection listener
+            database.ref('.info/connected').on('value', snap => {
+              if (snap.val() === true) {
+                setCloudStatus('connected');
+              } else {
+                setCloudStatus('offline');
+              }
+            });
+
+            // Clean legacy local storage fallback if it had dummy photos
+            try {
+              const cached = localStorage.getItem('rj_memories_fallback');
+              if (cached) {
+                const parsed = JSON.parse(cached);
+                if (Array.isArray(parsed)) {
+                  const cleaned = parsed.filter(m => m && !['mem-1', 'mem-2', 'mem-3', 'mem-4', 'mem-5', 'mem-6'].includes(m.id));
+                  localStorage.setItem('rj_memories_fallback', JSON.stringify(cleaned));
+                }
+              }
+            } catch (e) { }
+
+            // Realtime memories listener
+            database.ref('memories').on('value', snapshot => {
+              const data = snapshot.val();
+              if (data) {
+                let list = Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
+                list = list.filter(m => m && !['mem-1', 'mem-2', 'mem-3', 'mem-4', 'mem-5', 'mem-6'].includes(m.id));
+                list.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+                setMemories(list);
+                try {
+                  localStorage.setItem('rj_memories_fallback', JSON.stringify(list));
+                } catch (e) { }
+              } else {
+                setMemories([]);
+                try {
+                  localStorage.removeItem('rj_memories_fallback');
+                } catch (e) { }
+              }
+              setIsMemoriesLoading(false);
+            }, (err) => {
+              console.warn('Firebase memories fetch error:', err);
+              setIsMemoriesLoading(false);
+            });
+
+            // Realtime messages listener
+            database.ref('messages').on('value', snapshot => {
+              const data = snapshot.val();
+              if (data) {
+                let list = Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
+                list.sort((a, b) => (b.id > a.id ? 1 : -1));
+                setMessages(list);
+                try {
+                  localStorage.setItem('rj_messages', JSON.stringify(list));
+                } catch (e) { }
+              }
+            });
+
+          } catch (err) {
+            console.warn('Firebase init error:', err);
+            setCloudStatus('offline');
+          }
+        } else {
+          setCloudStatus('offline');
+        }
+      }, []);
+
+      // Sync likes to localStorage
+      const saveLikes = useCallback((newSet) => {
+        try {
+          localStorage.setItem('rj_likes', JSON.stringify(Array.from(newSet)));
+        } catch (e) { }
+      }, []);
+
+      // Like Toggle Handler
+      const toggleLike = useCallback((id) => {
+        const isLiked = likedMemories.has(id);
+        const nextLiked = new Set(likedMemories);
+
+        if (isLiked) {
+          nextLiked.delete(id);
+        } else {
+          nextLiked.add(id);
+          showToast('Terima kasih apresiasinya untuk momen ini! ❤️', 'success');
+        }
+
+        setLikedMemories(nextLiked);
+        saveLikes(nextLiked);
+
+        // Optimistic UI update
+        setMemories(prev => prev.map(m => {
+          if (m.id === id) {
+            return {
+              ...m,
+              likes: isLiked ? Math.max(0, (m.likes || 1) - 1) : (m.likes || 0) + 1
+            };
+          }
+          return m;
+        }));
+
+        // Firebase transaction
+        if (dbRef.current) {
+          dbRef.current.ref('memories/' + id + '/likes').transaction(curr => {
+            const val = typeof curr === 'number' ? curr : 0;
+            return isLiked ? Math.max(0, val - 1) : val + 1;
+          });
+        }
+      }, [likedMemories, saveLikes, showToast]);
+
+      // Ambient Nostalgia Synthesizer
+      const toggleAmbientSound = useCallback(() => {
+        if (!audioCtx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          audioCtx = new AudioCtx();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
+        if (isAmbientPlaying) {
+          if (ambientInterval) {
+            clearInterval(ambientInterval);
+            ambientInterval = null;
+          }
+          setIsAmbientPlaying(false);
+          showToast('Suasana nostalgia dijeda.', 'info');
+        } else {
+          setIsAmbientPlaying(true);
+          showToast('Suasana nostalgia berputar 🎵', 'info');
+
+          // Chords sequence
+          const chords = [
+            [261.63, 329.63, 392.00, 493.88], // Cmaj7
+            [220.00, 261.63, 329.63, 392.00], // Am7
+            [174.61, 220.00, 261.63, 329.63], // Fmaj7
+            [196.00, 246.94, 293.66, 349.23]  // G7
+          ];
+          let chordIndex = 0;
+
+          const playChord = () => {
+            if (!audioCtx) return;
+            const notes = chords[chordIndex % chords.length];
+            chordIndex++;
+            notes.forEach((freq, i) => {
+              try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.08);
+                gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.02, audioCtx.currentTime + 1.2 + i * 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 4.2);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime + i * 0.08);
+                osc.stop(audioCtx.currentTime + 4.5);
+              } catch (e) { }
+            });
+          };
+
+          playChord();
+          ambientInterval = setInterval(playChord, 4600);
+        }
+      }, [isAmbientPlaying, showToast]);
+
+      // Derived Stats
+      const uniqueProkers = useMemo(() => {
+        return Array.from(new Set(memories.map(m => m.proker).filter(Boolean)));
+      }, [memories]);
+
+      // Filtered Memories
+      const filteredMemories = useMemo(() => {
+        let list = [...memories];
+        if (activeFilter !== 'all') {
+          list = list.filter(m => m.proker === activeFilter);
+        }
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase().trim();
+          list = list.filter(m => {
+            const titleMatch = m.title && m.title.toLowerCase().includes(q);
+            const prokerMatch = m.proker && m.proker.toLowerCase().includes(q);
+            const storyMatch = m.story && m.story.toLowerCase().includes(q);
+            const peopleStr = Array.isArray(m.people) ? m.people.join(' ') : String(m.people || '');
+            const peopleMatch = peopleStr.toLowerCase().includes(q);
+            return titleMatch || prokerMatch || storyMatch || peopleMatch;
+          });
+        }
+        return list;
+      }, [memories, activeFilter, searchQuery]);
+
+      // Login Handler
+      const handleLogin = (user, pass) => {
+        if (user.toUpperCase() === 'ADALAH' && pass.toUpperCase() === 'KOMISI2') {
+          setIsAdmin(true);
+          sessionStorage.setItem('rj_is_admin', 'true');
+          setIsEnvelopeOpen(false);
+          setIsAdminModalOpen(true);
+          showToast('Selamat datang di Dasbor Admin Ruang Jejak! ✨', 'success');
+          return true;
+        }
+        return false;
       };
 
-      playChord();
-      ambientInterval = setInterval(playChord, 4600);
-    }
-  }, [isAmbientPlaying, showToast]);
+      const handleLogout = () => {
+        setIsAdmin(false);
+        sessionStorage.removeItem('rj_is_admin');
+        setIsAdminModalOpen(false);
+        showToast('Sesi admin telah ditutup.', 'info');
+      };
 
-  // Derived Stats
-  const uniqueProkers = useMemo(() => {
-    return Array.from(new Set(memories.map(m => m.proker).filter(Boolean)));
-  }, [memories]);
+      // Add Memory
+      const handleAddMemory = async (newMemory) => {
+        setMemories(prev => [newMemory, ...prev]);
+        if (dbRef.current) {
+          setCloudStatus('syncing');
+          try {
+            await dbRef.current.ref('memories/' + newMemory.id).set(newMemory);
+            setCloudStatus('connected');
+          } catch (e) {
+            console.warn('Firebase save memory error:', e);
+          }
+        }
+        showToast(`Kenangan "${newMemory.title}" berhasil diarsipkan! 🎉`, 'success');
+      };
 
-  // Filtered Memories
-  const filteredMemories = useMemo(() => {
-    let list = [...memories];
-    if (activeFilter !== 'all') {
-      list = list.filter(m => m.proker === activeFilter);
-    }
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase().trim();
-      list = list.filter(m => {
-        const titleMatch = m.title && m.title.toLowerCase().includes(q);
-        const prokerMatch = m.proker && m.proker.toLowerCase().includes(q);
-        const storyMatch = m.story && m.story.toLowerCase().includes(q);
-        const peopleStr = Array.isArray(m.people) ? m.people.join(' ') : String(m.people || '');
-        const peopleMatch = peopleStr.toLowerCase().includes(q);
-        return titleMatch || prokerMatch || storyMatch || peopleMatch;
-      });
-    }
-    return list;
-  }, [memories, activeFilter, searchQuery]);
+      // Toggle Featured
+      const handleToggleFeatured = async (id) => {
+        const item = memories.find(m => m.id === id);
+        if (!item) return;
+        const newFeatured = !item.featured;
 
-  // Login Handler
-  const handleLogin = (user, pass) => {
-    if (user.toUpperCase() === 'ADALAH' && pass.toUpperCase() === 'KOMISI2') {
-      setIsAdmin(true);
-      sessionStorage.setItem('rj_is_admin', 'true');
-      setIsEnvelopeOpen(false);
-      setIsAdminModalOpen(true);
-      showToast('Selamat datang di Dasbor Admin Ruang Jejak! ✨', 'success');
-      return true;
-    }
-    return false;
-  };
+        setMemories(prev => prev.map(m => m.id === id ? { ...m, featured: newFeatured } : m));
 
-  const handleLogout = () => {
-    setIsAdmin(false);
-    sessionStorage.removeItem('rj_is_admin');
-    setIsAdminModalOpen(false);
-    showToast('Sesi admin telah ditutup.', 'info');
-  };
+        if (dbRef.current) {
+          try {
+            await dbRef.current.ref('memories/' + id + '/featured').set(newFeatured);
+          } catch (e) { }
+        }
+        showToast(`Status sorotan untuk "${item.title}" diperbarui.`, 'info');
+      };
 
-  // Add Memory
-  const handleAddMemory = async (newMemory) => {
-    setMemories(prev => [newMemory, ...prev]);
-    if (dbRef.current) {
-      setCloudStatus('syncing');
-      try {
-        await dbRef.current.ref('memories/' + newMemory.id).set(newMemory);
-        setCloudStatus('connected');
-      } catch (e) {
-        console.warn('Firebase save memory error:', e);
-      }
-    }
-    showToast(`Kenangan "${newMemory.title}" berhasil diarsipkan! 🎉`, 'success');
-  };
+      // Delete Memory
+      const handleDeleteMemory = async (id) => {
+        const item = memories.find(m => m.id === id);
+        if (!item) return;
 
-  // Toggle Featured
-  const handleToggleFeatured = async (id) => {
-    const item = memories.find(m => m.id === id);
-    if (!item) return;
-    const newFeatured = !item.featured;
+        if (window.confirm(`Apakah kamu yakin ingin menghapus kenangan "${item.title}"?`)) {
+          setMemories(prev => prev.filter(m => m.id !== id));
+          if (dbRef.current) {
+            try {
+              await dbRef.current.ref('memories/' + id).remove();
+            } catch (e) { }
+          }
+          showToast('Foto kenangan berhasil dihapus.', 'info');
+        }
+      };
 
-    setMemories(prev => prev.map(m => m.id === id ? { ...m, featured: newFeatured } : m));
+      // Add Message
+      const handleAddMessage = async (newMsg) => {
+        setMessages(prev => [newMsg, ...prev]);
+        if (dbRef.current) {
+          setCloudStatus('syncing');
+          try {
+            await dbRef.current.ref('messages/' + newMsg.id).set(newMsg);
+            setCloudStatus('connected');
+          } catch (e) { }
+        }
+        showToast('Suratmu telah disematkan di dinding apresiasi! ✨', 'success');
+      };
 
-    if (dbRef.current) {
-      try {
-        await dbRef.current.ref('memories/' + id + '/featured').set(newFeatured);
-      } catch (e) {}
-    }
-    showToast(`Status sorotan untuk "${item.title}" diperbarui.`, 'info');
-  };
+      // Delete Message
+      const handleDeleteMessage = async (id) => {
+        if (window.confirm('Hapus surat apresiasi ini dari papan?')) {
+          setMessages(prev => prev.filter(m => m.id !== id));
+          if (dbRef.current) {
+            try {
+              await dbRef.current.ref('messages/' + id).remove();
+            } catch (e) { }
+          }
+          showToast('Pesan berhasil dihapus.', 'info');
+        }
+      };
 
-  // Delete Memory
-  const handleDeleteMemory = async (id) => {
-    const item = memories.find(m => m.id === id);
-    if (!item) return;
+      // Reset to Defaults
+      const handleResetDefaults = async () => {
+        if (window.confirm('Bersihkan semua galeri foto dan kembalikan pesan ke versi awal?')) {
+          setMemories([]);
+          setMessages(DEFAULT_MESSAGES);
+          if (dbRef.current) {
+            await dbRef.current.ref('memories').set({});
+            const msgUpdates = {};
+            DEFAULT_MESSAGES.forEach(m => { msgUpdates[m.id] = m; });
+            await dbRef.current.ref('messages').set(msgUpdates);
+          }
+          try {
+            localStorage.removeItem('rj_memories_fallback');
+          } catch (e) { }
+          showToast('Galeri foto telah dibersihkan.', 'success');
+        }
+      };
 
-    if (window.confirm(`Apakah kamu yakin ingin menghapus kenangan "${item.title}"?`)) {
-      setMemories(prev => prev.filter(m => m.id !== id));
-      if (dbRef.current) {
-        try {
-          await dbRef.current.ref('memories/' + id).remove();
-        } catch (e) {}
-      }
-      showToast('Foto kenangan berhasil dihapus.', 'info');
-    }
-  };
+      // Import Backup
+      const handleImportBackup = async (parsed) => {
+        if (Array.isArray(parsed.memories)) {
+          setMemories(parsed.memories);
+          if (dbRef.current) {
+            const memUpdates = {};
+            parsed.memories.forEach(m => { memUpdates[m.id] = m; });
+            await dbRef.current.ref('memories').set(memUpdates);
+          }
+        }
+        if (Array.isArray(parsed.messages)) {
+          setMessages(parsed.messages);
+          if (dbRef.current) {
+            const msgUpdates = {};
+            parsed.messages.forEach(m => { msgUpdates[m.id] = m; });
+            await dbRef.current.ref('messages').set(msgUpdates);
+          }
+        }
+        showToast('Cadangan data berhasil dipulihkan!', 'success');
+      };
 
-  // Add Message
-  const handleAddMessage = async (newMsg) => {
-    setMessages(prev => [newMsg, ...prev]);
-    if (dbRef.current) {
-      setCloudStatus('syncing');
-      try {
-        await dbRef.current.ref('messages/' + newMsg.id).set(newMsg);
-        setCloudStatus('connected');
-      } catch (e) {}
-    }
-    showToast('Suratmu telah disematkan di dinding apresiasi! ✨', 'success');
-  };
-
-  // Delete Message
-  const handleDeleteMessage = async (id) => {
-    if (window.confirm('Hapus surat apresiasi ini dari papan?')) {
-      setMessages(prev => prev.filter(m => m.id !== id));
-      if (dbRef.current) {
-        try {
-          await dbRef.current.ref('messages/' + id).remove();
-        } catch (e) {}
-      }
-      showToast('Pesan berhasil dihapus.', 'info');
-    }
-  };
-
-  // Reset to Defaults
-  const handleResetDefaults = async () => {
-    if (window.confirm('Bersihkan semua galeri foto dan kembalikan pesan ke versi awal?')) {
-      setMemories([]);
-      setMessages(DEFAULT_MESSAGES);
-      if (dbRef.current) {
-        await dbRef.current.ref('memories').set({});
-        const msgUpdates = {};
-        DEFAULT_MESSAGES.forEach(m => { msgUpdates[m.id] = m; });
-        await dbRef.current.ref('messages').set(msgUpdates);
-      }
-      try {
-        localStorage.removeItem('rj_memories_fallback');
-      } catch (e) {}
-      showToast('Galeri foto telah dibersihkan.', 'success');
-    }
-  };
-
-  // Import Backup
-  const handleImportBackup = async (parsed) => {
-    if (Array.isArray(parsed.memories)) {
-      setMemories(parsed.memories);
-      if (dbRef.current) {
-        const memUpdates = {};
-        parsed.memories.forEach(m => { memUpdates[m.id] = m; });
-        await dbRef.current.ref('memories').set(memUpdates);
-      }
-    }
-    if (Array.isArray(parsed.messages)) {
-      setMessages(parsed.messages);
-      if (dbRef.current) {
-        const msgUpdates = {};
-        parsed.messages.forEach(m => { msgUpdates[m.id] = m; });
-        await dbRef.current.ref('messages').set(msgUpdates);
-      }
-    }
-    showToast('Cadangan data berhasil dipulihkan!', 'success');
-  };
-
-  return (
-    <div className="react-app-root">
-      {/* Ambient Audio Bar */}
-      <div className="ambient-bar">
-        <button
-          className={`ambient-toggle ${isAmbientPlaying ? 'active' : ''}`}
-          onClick={toggleAmbientSound}
-          title="Putar Musik Suasana Nostalgia"
-          aria-label="Toggle Musik Suasana"
-        >
-          <i className="fa-solid fa-music note-icon"></i>
-          <span className="ambient-text">
-            {isAmbientPlaying ? 'Suasana Nostalgia: Aktif' : 'Suasana Nostalgia: Mati'}
-          </span>
-          <span className="wave-bars">
-            <span></span><span></span><span></span><span></span>
-          </span>
-        </button>
-      </div>
-
-      {/* Navigation Bar */}
-      <header className="navbar">
-        <div className="nav-container">
-          <a href="#" className="brand-logo">
-            <span className="brand-sub">MEMORIA PROKER</span>
-            <span className="brand-title">Ruang Jejak</span>
-          </a>
-
-          <nav className="nav-links">
-            <a href="#galeri" className="nav-item active"><i className="fa-regular fa-image"></i> Galeri Kenangan</a>
-            <a href="#linimasa" className="nav-item"><i className="fa-solid fa-timeline"></i> Linimasa Proker</a>
-            <a href="#pesan" className="nav-item"><i className="fa-regular fa-envelope"></i> Surat & Pesan</a>
-          </nav>
-
-          <div className="nav-actions">
-            <button className="btn btn-outline" onClick={() => setIsWriteModalOpen(true)}>
-              <i className="fa-solid fa-feather-pointed"></i> Tulis Pesan
+      return (
+        <div className="react-app-root">
+          {/* Ambient Audio Bar */}
+          <div className="ambient-bar">
+            <button
+              className={`ambient-toggle ${isAmbientPlaying ? 'active' : ''}`}
+              onClick={toggleAmbientSound}
+              title="Putar Musik Suasana Nostalgia"
+              aria-label="Toggle Musik Suasana"
+            >
+              <i className="fa-solid fa-music note-icon"></i>
+              <span className="ambient-text">
+                {isAmbientPlaying ? 'Suasana Nostalgia: Aktif' : 'Suasana Nostalgia: Mati'}
+              </span>
+              <span className="wave-bars">
+                <span></span><span></span><span></span><span></span>
+              </span>
             </button>
-
-            {isAdmin ? (
-              <button className="btn btn-primary" onClick={() => setIsAdminModalOpen(true)}>
-                <i className="fa-solid fa-user-gear"></i> Dasbor Admin
-              </button>
-            ) : (
-              <button className="btn btn-primary" onClick={() => { setIsEnvelopeOpen(true); setIsEnvelopeUnfolded(false); }}>
-                <i className="fa-solid fa-lock"></i> Masuk / Admin
-              </button>
-            )}
           </div>
 
-          <button className="mobile-toggle" onClick={() => setMobileDrawerOpen(prev => !prev)} aria-label="Buka Menu">
-            <i className="fa-solid fa-bars"></i>
-          </button>
-        </div>
-      </header>
-
-      {/* Mobile Drawer */}
-      <div className={`mobile-drawer ${mobileDrawerOpen ? 'open' : ''}`}>
-        <div className="mobile-drawer-content">
-          <a href="#galeri" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>
-            <i className="fa-regular fa-image"></i> Galeri Kenangan
-          </a>
-          <a href="#linimasa" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>
-            <i className="fa-solid fa-timeline"></i> Linimasa Proker
-          </a>
-          <a href="#pesan" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>
-            <i className="fa-regular fa-envelope"></i> Surat & Pesan
-          </a>
-          <hr className="drawer-divider" />
-          <button className="btn btn-outline w-100 mb-2" onClick={() => { setMobileDrawerOpen(false); setIsWriteModalOpen(true); }}>
-            <i className="fa-solid fa-feather-pointed"></i> Tulis Pesan
-          </button>
-          {isAdmin ? (
-            <button className="btn btn-primary w-100" onClick={() => { setMobileDrawerOpen(false); setIsAdminModalOpen(true); }}>
-              <i className="fa-solid fa-user-gear"></i> Dasbor Admin
-            </button>
-          ) : (
-            <button className="btn btn-primary w-100" onClick={() => { setMobileDrawerOpen(false); setIsEnvelopeOpen(true); setIsEnvelopeUnfolded(false); }}>
-              <i className="fa-solid fa-lock"></i> Masuk Admin
-            </button>
-          )}
-        </div>
-      </div>
-
-      <main>
-        {/* HERO SECTION */}
-        <section className="hero-section">
-          <div className="hero-bg-glow"></div>
-          <div className="container hero-content">
-            <div className="hero-badge">
-              <span className="badge-dot"></span>
-              <span>Arsip Dokumentasi & Rasa Terima Kasih</span>
-            </div>
-            <h1 className="hero-title">
-              Untuk Setiap Keringat, Tawa, & <span className="highlight-serif">Proker Komisi II</span> yang Kita Lalui Bersama.
-            </h1>
-            <p className="hero-subtitle">
-              Terima kasih untuk setiap proses, kerja sama, dan cerita yang kita lalui bersama dalam satu komisi ini. Banyak hal yang kita pelajari, mulai dari tanggung jawab hingga arti kebersamaan.
-              Mungkin periode ini akan berakhir, tetapi kenangan dan pengalaman yang kita ciptakan akan selalu menjadi bagian berharga dari perjalanan kita.
-            </p>
-
-            <div className="hero-stats">
-              <div className="stat-card">
-                <span className="stat-num">{uniqueProkers.length}</span>
-                <span className="stat-label">Program Kerja</span>
-              </div>
-              <div className="stat-divider"></div>
-              <div className="stat-card">
-                <span className="stat-num">{memories.length}</span>
-                <span className="stat-label">Momen Terabadikan</span>
-              </div>
-              <div className="stat-divider"></div>
-              <div className="stat-card">
-                <span className="stat-num">{messages.length}</span>
-                <span className="stat-label">Surat & Apresiasi</span>
-              </div>
-            </div>
-
-            <div className="hero-cta-group">
-              <a href="#galeri" className="btn btn-hero-primary">
-                Jelajahi Kenangan <i className="fa-solid fa-arrow-down-long"></i>
+          {/* Navigation Bar */}
+          <header className="navbar">
+            <div className="nav-container">
+              <a href="#" className="brand-logo">
+                <span className="brand-sub">MEMORIA PROKER</span>
+                <span className="brand-title">Ruang Jejak</span>
               </a>
-              <button
-                className="btn btn-hero-secondary"
-                onClick={() => {
-                  if (isAdmin) {
-                    setIsAdminModalOpen(true);
-                  } else {
-                    setIsEnvelopeOpen(true);
-                    setTimeout(() => {
-                      setIsEnvelopeUnfolded(true);
-                      playPaperRustleSound();
-                    }, 400);
-                  }
-                }}
-              >
-                <i className="fa-regular fa-envelope-open"></i> Buka Amplop Masuk
+
+              <nav className="nav-links">
+                <a href="#galeri" className="nav-item active"><i className="fa-regular fa-image"></i> Galeri Kenangan</a>
+                <a href="#linimasa" className="nav-item"><i className="fa-solid fa-timeline"></i> Linimasa Proker</a>
+                <a href="#pesan" className="nav-item"><i className="fa-regular fa-envelope"></i> Surat & Pesan</a>
+              </nav>
+
+              <div className="nav-actions">
+                <button className="btn btn-outline" onClick={() => setIsWriteModalOpen(true)}>
+                  <i className="fa-solid fa-feather-pointed"></i> Tulis Pesan
+                </button>
+
+                {isAdmin ? (
+                  <button className="btn btn-primary" onClick={() => setIsAdminModalOpen(true)}>
+                    <i className="fa-solid fa-user-gear"></i> Dasbor Admin
+                  </button>
+                ) : (
+                  <button className="btn btn-primary" onClick={() => { setIsEnvelopeOpen(true); setIsEnvelopeUnfolded(false); }}>
+                    <i className="fa-solid fa-lock"></i> Masuk / Admin
+                  </button>
+                )}
+              </div>
+
+              <button className="mobile-toggle" onClick={() => setMobileDrawerOpen(prev => !prev)} aria-label="Buka Menu">
+                <i className="fa-solid fa-bars"></i>
               </button>
             </div>
-          </div>
-        </section>
+          </header>
 
-        {/* GALLERY SECTION */}
-        <section className="section-gallery" id="galeri">
-          <div className="container">
-            <div className="section-header">
-              <div className="section-meta">
-                <span className="section-subtitle">Galeri Momen Berharga</span>
-                <h2 className="section-title">Rekam Jejak di Balik Layar</h2>
+          {/* Mobile Drawer */}
+          <div className={`mobile-drawer ${mobileDrawerOpen ? 'open' : ''}`}>
+            <div className="mobile-drawer-content">
+              <a href="#galeri" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>
+                <i className="fa-regular fa-image"></i> Galeri Kenangan
+              </a>
+              <a href="#linimasa" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>
+                <i className="fa-solid fa-timeline"></i> Linimasa Proker
+              </a>
+              <a href="#pesan" className="mobile-nav-link" onClick={() => setMobileDrawerOpen(false)}>
+                <i className="fa-regular fa-envelope"></i> Surat & Pesan
+              </a>
+              <hr className="drawer-divider" />
+              <button className="btn btn-outline w-100 mb-2" onClick={() => { setMobileDrawerOpen(false); setIsWriteModalOpen(true); }}>
+                <i className="fa-solid fa-feather-pointed"></i> Tulis Pesan
+              </button>
+              {isAdmin ? (
+                <button className="btn btn-primary w-100" onClick={() => { setMobileDrawerOpen(false); setIsAdminModalOpen(true); }}>
+                  <i className="fa-solid fa-user-gear"></i> Dasbor Admin
+                </button>
+              ) : (
+                <button className="btn btn-primary w-100" onClick={() => { setMobileDrawerOpen(false); setIsEnvelopeOpen(true); setIsEnvelopeUnfolded(false); }}>
+                  <i className="fa-solid fa-lock"></i> Masuk Admin
+                </button>
+              )}
+            </div>
+          </div>
+
+          <main>
+            {/* HERO SECTION */}
+            <section className="hero-section">
+              <div className="hero-bg-glow"></div>
+              <div className="container hero-content">
+                <div className="hero-badge">
+                  <span className="badge-dot"></span>
+                  <span>Arsip Dokumentasi & Rasa Terima Kasih</span>
+                </div>
+                <h1 className="hero-title">
+                  Untuk Setiap Keringat, Tawa, & <span className="highlight-serif">Proker Komisi II</span> yang Kita Lalui Bersama.
+                </h1>
+                <p className="hero-subtitle">
+                  Terima kasih untuk setiap proses, kerja sama, dan cerita yang kita lalui bersama dalam satu komisi ini. Banyak hal yang kita pelajari, mulai dari tanggung jawab hingga arti kebersamaan.
+                  Mungkin periode ini akan berakhir, tetapi kenangan dan pengalaman yang kita ciptakan akan selalu menjadi bagian berharga dari perjalanan kita.
+                </p>
+
+                <div className="hero-stats">
+                  <div className="stat-card">
+                    <span className="stat-num">{uniqueProkers.length}</span>
+                    <span className="stat-label">Program Kerja</span>
+                  </div>
+                  <div className="stat-divider"></div>
+                  <div className="stat-card">
+                    <span className="stat-num">{memories.length}</span>
+                    <span className="stat-label">Momen Terabadikan</span>
+                  </div>
+                  <div className="stat-divider"></div>
+                  <div className="stat-card">
+                    <span className="stat-num">{messages.length}</span>
+                    <span className="stat-label">Surat & Apresiasi</span>
+                  </div>
+                </div>
+
+                <div className="hero-cta-group">
+                  <a href="#galeri" className="btn btn-hero-primary">
+                    Jelajahi Kenangan <i className="fa-solid fa-arrow-down-long"></i>
+                  </a>
+                  <button
+                    className="btn btn-hero-secondary"
+                    onClick={() => {
+                      if (isAdmin) {
+                        setIsAdminModalOpen(true);
+                      } else {
+                        setIsEnvelopeOpen(true);
+                        setTimeout(() => {
+                          setIsEnvelopeUnfolded(true);
+                          playPaperRustleSound();
+                        }, 400);
+                      }
+                    }}
+                  >
+                    <i className="fa-regular fa-envelope-open"></i> Buka Amplop Masuk
+                  </button>
+                </div>
               </div>
-              <div className="search-filter-box">
-                <div className="search-input-wrapper">
-                  <i className="fa-solid fa-magnifying-glass search-icon"></i>
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Cari proker, kakak, atau momen..."
-                    aria-label="Cari kenangan"
-                  />
-                  {searchQuery && (
-                    <button className="clear-search-btn" onClick={() => setSearchQuery('')} title="Bersihkan">
-                      <i className="fa-solid fa-xmark"></i>
+            </section>
+
+            {/* GALLERY SECTION */}
+            <section className="section-gallery" id="galeri">
+              <div className="container">
+                <div className="section-header">
+                  <div className="section-meta">
+                    <span className="section-subtitle">Galeri Momen Berharga</span>
+                    <h2 className="section-title">Rekam Jejak di Balik Layar</h2>
+                  </div>
+                  <div className="search-filter-box">
+                    <div className="search-input-wrapper">
+                      <i className="fa-solid fa-magnifying-glass search-icon"></i>
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Cari proker, kakak, atau momen..."
+                        aria-label="Cari kenangan"
+                      />
+                      {searchQuery && (
+                        <button className="clear-search-btn" onClick={() => setSearchQuery('')} title="Bersihkan">
+                          <i className="fa-solid fa-xmark"></i>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Filter Chips */}
+                <div className="filter-scroll-wrapper">
+                  <div className="filter-chips">
+                    <button
+                      className={`chip ${activeFilter === 'all' ? 'active' : ''}`}
+                      onClick={() => setActiveFilter('all')}
+                    >
+                      Semua Momen
+                    </button>
+                    {uniqueProkers.map(proker => (
+                      <button
+                        key={proker}
+                        className={`chip ${activeFilter === proker ? 'active' : ''}`}
+                        onClick={() => setActiveFilter(proker)}
+                      >
+                        {proker}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Photo Cards Grid */}
+                {isMemoriesLoading ? (
+                  <div style={{ textAlign: 'center', padding: '3.5rem 1rem', color: 'var(--accent-gold)' }}>
+                    <i className="fa-solid fa-circle-notch fa-spin fa-2x" style={{ marginBottom: '1rem', display: 'block' }}></i>
+                    <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '0.95rem', opacity: 0.85 }}>Memuat galeri kenangan...</p>
+                  </div>
+                ) : filteredMemories.length > 0 ? (
+                  <div className="gallery-grid">
+                    {filteredMemories.map(m => {
+                      const isLiked = likedMemories.has(m.id);
+                      const peopleList = Array.isArray(m.people) ? m.people : (m.people ? m.people.split(',') : []);
+                      const peoplePreview = peopleList.length > 0
+                        ? peopleList.slice(0, 2).join(', ') + (peopleList.length > 2 ? ` +${peopleList.length - 2}` : '')
+                        : 'BPH & Panitia';
+
+                      return (
+                        <article
+                          key={m.id}
+                          className="memory-card"
+                          onClick={() => setSelectedDetailMemory(m)}
+                          tabIndex={0}
+                          role="button"
+                        >
+                          <div className="memory-media-wrap">
+                            <img src={m.image} alt={m.title} loading="lazy" />
+                            <span className="memory-proker-tag">{m.proker}</span>
+                            {m.featured && (
+                              <span className="featured-pin">
+                                <i className="fa-solid fa-thumbtack"></i> Sorotan
+                              </span>
+                            )}
+                            {isAdmin && (
+                              <button
+                                type="button"
+                                className="admin-card-delete-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteMemory(m.id);
+                                }}
+                                title="Hapus foto ini (Admin)"
+                                aria-label={`Hapus foto ${m.title}`}
+                              >
+                                <i className="fa-solid fa-trash-can"></i>
+                              </button>
+                            )}
+                          </div>
+                          <div className="memory-body">
+                            <div className="memory-date">
+                              <i className="fa-regular fa-calendar"></i> {formatDateIndonesian(m.date)}
+                            </div>
+                            <h3 className="memory-title">{m.title}</h3>
+                            <p className="memory-story-snippet">{m.story}</p>
+                            <div className="memory-card-footer">
+                              <div className="memory-people-preview" title={`Kakak & Pengurus: ${peopleList.join(', ')}`}>
+                                <i className="fa-solid fa-users"></i>
+                                <span>{peoplePreview}</span>
+                              </div>
+                              <button
+                                className={`memory-like-btn ${isLiked ? 'liked' : ''}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleLike(m.id);
+                                }}
+                                title="Sukai momen ini"
+                              >
+                                <i className={`${isLiked ? 'fa-solid' : 'fa-regular'} fa-heart`}></i>
+                                <span className="likes-num">{m.likes || 0}</span>
+                              </button>
+                            </div>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="empty-state">
+                    <div className="empty-icon"><i className="fa-regular fa-folder-open"></i></div>
+                    <h3>Belum ada kenangan yang cocok</h3>
+                    <p>Coba kata kunci lain atau pilih kategori proker yang berbeda.</p>
+                    <button
+                      className="btn btn-outline"
+                      onClick={() => { setActiveFilter('all'); setSearchQuery(''); }}
+                    >
+                      Tampilkan Semua
+                    </button>
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {/* TIMELINE SECTION */}
+            <section className="section-timeline" id="linimasa">
+              <div className="container">
+                <div className="section-header text-center">
+                  <span className="section-subtitle">Langkah Demi Langkah</span>
+                  <h2 className="section-title">Perjalanan Satu Periode</h2>
+                  <p className="section-desc max-600">
+                    Setiap fase menyimpan cerita unik; dari masa orientasi yang canggung hingga puncak proker yang menguras emosi.
+                  </p>
+                </div>
+
+                <div className="timeline-container">
+                  {DEFAULT_TIMELINE.map((item, idx) => (
+                    <div key={idx} className="timeline-item">
+                      <div className="timeline-marker"></div>
+                      <div className="timeline-card">
+                        <span className="timeline-period">{item.period}</span>
+                        <h3 className="timeline-title">{item.title}</h3>
+                        <p className="timeline-desc">{item.desc}</p>
+                        <div className="timeline-quote">{item.quote}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* WALL OF GRATITUDE / MESSAGES SECTION */}
+            <section className="section-messages" id="pesan">
+              <div className="container">
+                <div className="section-header between">
+                  <div>
+                    <span className="section-subtitle">Apresiasi & Doa</span>
+                    <h2 className="section-title">Surat Kasih untuk Kakak</h2>
+                    <p className="section-desc">Pesan tulus dari adik-adik tingkat yang tak sempat terucap secara langsung.</p>
+                  </div>
+                  <button className="btn btn-primary" onClick={() => setIsWriteModalOpen(true)}>
+                    <i className="fa-solid fa-pen-nib"></i> Titip Pesan Baru
+                  </button>
+                </div>
+
+                <div className="messages-grid">
+                  {messages.length > 0 ? (
+                    messages.map(msg => (
+                      <article key={msg.id} className={`letter-note-card theme-${msg.theme || 'parchment'}`}>
+                        <div className="letter-note-pin"></div>
+                        <div className="note-to-badge">
+                          <i className="fa-solid fa-envelope-open-text"></i> Kepada: {msg.recipient}
+                        </div>
+                        {msg.prokerRef && (
+                          <span className="note-proker-ref">
+                            <i className="fa-solid fa-bookmark"></i> Momen: {msg.prokerRef}
+                          </span>
+                        )}
+                        <div className="note-content-text">
+                          “{msg.body}”
+                        </div>
+                        <div className="note-sender-info">
+                          <span className="note-sender-name">Dari: {msg.sender}</span>
+                          <span className="note-date-text">{msg.date}</span>
+                        </div>
+                      </article>
+                    ))
+                  ) : (
+                    <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem' }}>
+                      <p className="text-muted">Belum ada surat yang dipajang. Jadilah yang pertama menitipkan pesan untuk kakak pengurus!</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+          </main>
+
+          {/* FOOTER */}
+          <footer className="site-footer">
+            <div className="container footer-content">
+              <div className="footer-brand">
+                <div className="brand-title">Ruang Jejak</div>
+                <p className="footer-tagline">
+                  Didedikasikan untuk para pemimpin, mentor, dan kakak terhebat dalam kepengurusan. Terima kasih telah menjadi rumah dan lentera.
+                </p>
+              </div>
+              <div className="footer-links">
+                <span className="footer-label">Navigasi Pintas</span>
+                <a href="#galeri">Koleksi Foto</a>
+                <a href="#linimasa">Perjalanan Proker</a>
+                <a href="#pesan">Papan Ucapan</a>
+              </div>
+              <div className="footer-admin-link">
+                <span className="footer-label">Area Pengurus</span>
+                <button
+                  className="btn-text-link"
+                  onClick={() => {
+                    if (isAdmin) {
+                      setIsAdminModalOpen(true);
+                    } else {
+                      setIsEnvelopeOpen(true);
+                      setIsEnvelopeUnfolded(false);
+                    }
+                  }}
+                >
+                  <i className="fa-solid fa-shield-halved"></i> Kelola Arsip (Admin)
+                </button>
+                <p className="footer-copy">© 2024–2026 Keluarga Besar Organisasi. Selamanya bersaudara.</p>
+              </div>
+            </div>
+          </footer>
+
+          {/* ============================================================== */}
+          {/* 3D INTERACTIVE ENVELOPE LOGIN MODAL                            */}
+          {/* ============================================================== */}
+          <EnvelopeModal
+            isOpen={isEnvelopeOpen}
+            isUnfolded={isEnvelopeUnfolded}
+            onClose={() => { setIsEnvelopeOpen(false); setIsEnvelopeUnfolded(false); }}
+            onUnfold={() => {
+              setIsEnvelopeUnfolded(true);
+              playWaxBreakSound();
+              playPaperRustleSound();
+            }}
+            onLogin={handleLogin}
+          />
+
+          {/* ============================================================== */}
+          {/* ADMIN DASHBOARD MODAL                                          */}
+          {/* ============================================================== */}
+          {isAdminModalOpen && (
+            <AdminModal
+              isOpen={isAdminModalOpen}
+              activeTab={adminActiveTab}
+              setActiveTab={setAdminActiveTab}
+              onClose={() => setIsAdminModalOpen(false)}
+              onLogout={handleLogout}
+              memories={memories}
+              messages={messages}
+              onAddMemory={handleAddMemory}
+              onToggleFeatured={handleToggleFeatured}
+              onDeleteMemory={handleDeleteMemory}
+              onDeleteMessage={handleDeleteMessage}
+              onResetDefaults={handleResetDefaults}
+              onImportBackup={handleImportBackup}
+            />
+          )}
+
+          {/* ============================================================== */}
+          {/* DETAIL LIGHTBOX MODAL                                          */}
+          {/* ============================================================== */}
+          {selectedDetailMemory && (
+            <DetailModal
+              memory={selectedDetailMemory}
+              isLiked={likedMemories.has(selectedDetailMemory.id)}
+              isAdmin={isAdmin}
+              onClose={() => setSelectedDetailMemory(null)}
+              onDeleteMemory={(id) => {
+                handleDeleteMemory(id);
+                setSelectedDetailMemory(null);
+              }}
+              onToggleLike={() => toggleLike(selectedDetailMemory.id)}
+              onShare={() => {
+                if (navigator.share) {
+                  navigator.share({
+                    title: selectedDetailMemory.title,
+                    text: `Kenangan ${selectedDetailMemory.proker}: "${selectedDetailMemory.title}" bersama kakak organisasi.`,
+                    url: window.location.href
+                  }).catch(() => { });
+                } else {
+                  navigator.clipboard.writeText(window.location.href);
+                  showToast('Tautan kenangan disalin ke papan klip!', 'info');
+                }
+              }}
+            />
+          )}
+
+          {/* ============================================================== */}
+          {/* WRITE MESSAGE MODAL                                            */}
+          {/* ============================================================== */}
+          {isWriteModalOpen && (
+            <WriteModal
+              isOpen={isWriteModalOpen}
+              onClose={() => setIsWriteModalOpen(false)}
+              onSubmit={handleAddMessage}
+            />
+          )}
+
+          {/* Toast Notification Container */}
+          <div className="toast-container" aria-live="polite">
+            {toasts.map(t => (
+              <div key={t.id} className={`toast-notification toast-${t.type}`}>
+                <i className={`toast-icon ${t.type === 'success' ? 'fa-solid fa-circle-check' : t.type === 'error' ? 'fa-solid fa-circle-exclamation' : 'fa-solid fa-circle-info'}`}></i>
+                <span className="toast-message">{t.message}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // ============================================================================
+    // SUB-COMPONENT: EnvelopeModal
+    // ============================================================================
+    function EnvelopeModal({ isOpen, isUnfolded, onClose, onUnfold, onLogin }) {
+      const [username, setUsername] = useState('');
+      const [password, setPassword] = useState('');
+      const [showPwd, setShowPwd] = useState(false);
+      const [errorMsg, setErrorMsg] = useState('');
+
+      if (!isOpen) return null;
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        const success = onLogin(username, password);
+        if (!success) {
+          setErrorMsg('Nama pengguna atau kata sandi tidak cocok. Gunakan akun uji coba yang tertera.');
+        } else {
+          setErrorMsg('');
+          setUsername('');
+          setPassword('');
+        }
+      };
+
+      const fillQuickCreds = () => {
+        setUsername('ADALAH');
+        setPassword('KOMISI2');
+        setErrorMsg('');
+      };
+
+      return (
+        <div className="modal-backdrop active" role="dialog" aria-modal="true">
+          <div className="envelope-modal-wrapper">
+            <button className="modal-close-btn" onClick={onClose} aria-label="Tutup">
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+
+            <div className="envelope-stage">
+              <div className={`envelope-container ${isUnfolded ? 'opened' : ''}`}>
+                <div className="envelope-back"></div>
+
+                {/* The sliding letter form */}
+                <div className="envelope-letter">
+                  <div className="letter-inner">
+                    <div className="letter-header">
+                      <span className="letter-seal-mini"><i className="fa-solid fa-stamp"></i></span>
+                      <span className="letter-tag">Akses Resmi Pengurus</span>
+                      <h3 className="letter-title">Pintu Ruang Kenangan</h3>
+                      <p className="letter-sub">Masuk untuk mengelola dokumentasi proker atau menambah foto baru.</p>
+                    </div>
+
+                    <form className="letter-form" onSubmit={handleSubmit} autoComplete="off">
+                      <div className="form-group">
+                        <label htmlFor="reactAdminUser"><i className="fa-regular fa-user"></i> Nama Pengguna</label>
+                        <input
+                          type="text"
+                          id="reactAdminUser"
+                          className="form-input"
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          placeholder="Masukkan username"
+                          required
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label htmlFor="reactAdminPwd"><i className="fa-solid fa-key"></i> Kata Sandi</label>
+                        <div className="password-wrapper">
+                          <input
+                            type={showPwd ? 'text' : 'password'}
+                            id="reactAdminPwd"
+                            className="form-input"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Masukkan kata sandi"
+                            required
+                          />
+                          <button
+                            type="button"
+                            className="toggle-pwd-btn"
+                            onClick={() => setShowPwd(p => !p)}
+                            aria-label="Tampilkan sandi"
+                          >
+                            <i className={showPwd ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'}></i>
+                          </button>
+                        </div>
+                      </div>
+
+                      {errorMsg && (
+                        <div className="login-feedback error">
+                          <i className="fa-solid fa-circle-exclamation"></i> {errorMsg}
+                        </div>
+                      )}
+
+                      <button type="submit" className="btn btn-primary w-100 btn-submit-login">
+                        <i className="fa-solid fa-arrow-right-to-bracket"></i> Masuk ke Dasbor Admin
+                      </button>
+
+                      <div className="quick-admin-hint">
+                        <p className="hint-title"><i className="fa-solid fa-circle-info"></i> Info Akun Akses (Uji Coba):</p>
+                        <div className="hint-badges">
+                          <span className="credential-pill" onClick={fillQuickCreds} title="Klik untuk isi otomatis">
+                            Username: <strong>ADALAH</strong> | Sandi: <strong>KOMISI2</strong>
+                          </span>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+
+                <div className="envelope-front-pocket"></div>
+
+                {/* Top flap with wax seal */}
+                <div className="envelope-flap">
+                  <div
+                    className="wax-seal"
+                    onClick={onUnfold}
+                    title="Klik Segel Lilin untuk Membuka Amplop"
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <div className="wax-seal-inner">
+                      <span className="wax-monogram">RJ</span>
+                    </div>
+                    <div className="wax-pulse"></div>
+                  </div>
+                </div>
+              </div>
+
+              {!isUnfolded && (
+                <div className="envelope-instruction">
+                  <i className="fa-regular fa-hand-pointer pulse-icon"></i>
+                  <span>Ketuk segel lilin merah di atas untuk membuka amplop</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ============================================================================
+    // SUB-COMPONENT: AdminModal
+    // ============================================================================
+    function AdminModal({
+      isOpen,
+      activeTab,
+      setActiveTab,
+      onClose,
+      onLogout,
+      memories,
+      messages,
+      onAddMemory,
+      onToggleFeatured,
+      onDeleteMemory,
+      onDeleteMessage,
+      onResetDefaults,
+      onImportBackup
+    }) {
+      // Upload form state
+      const [photoPreview, setPhotoPreview] = useState(null);
+      const [urlInput, setUrlInput] = useState('');
+      const [title, setTitle] = useState('');
+      const [proker, setProker] = useState('');
+      const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
+      const [people, setPeople] = useState('');
+      const [story, setStory] = useState('');
+      const [featured, setFeatured] = useState(false);
+      const [adminSearch, setAdminSearch] = useState('');
+
+      const fileInputRef = useRef(null);
+      const importInputRef = useRef(null);
+
+      if (!isOpen) return null;
+
+      const handleImageFile = (file) => {
+        if (!file || !file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const maxDim = 1200;
+            let w = img.width;
+            let h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) {
+                h = Math.round((h * maxDim) / w);
+                w = maxDim;
+              } else {
+                w = Math.round((w * maxDim) / h);
+                h = maxDim;
+              }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            setPhotoPreview(canvas.toDataURL('image/webp', 0.4));
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      };
+
+      const handleUploadSubmit = (e) => {
+        e.preventDefault();
+        const imgSrc = photoPreview || urlInput.trim();
+        if (!imgSrc) {
+          alert('Harap pilih berkas foto atau isi URL gambar!');
+          return;
+        }
+
+        const newMem = {
+          id: 'mem-' + Date.now(),
+          title: title.trim(),
+          proker: proker.trim(),
+          date: date || new Date().toISOString().split('T')[0],
+          image: imgSrc,
+          people: people.split(',').map(s => s.trim()).filter(Boolean),
+          story: story.trim(),
+          likes: 0,
+          featured
+        };
+
+        onAddMemory(newMem);
+        // Reset form
+        setPhotoPreview(null);
+        setUrlInput('');
+        setTitle('');
+        setProker('');
+        setPeople('');
+        setStory('');
+        setFeatured(false);
+        setActiveTab('tabManage');
+      };
+
+      const exportBackupJSON = () => {
+        const backupData = {
+          exportDate: new Date().toISOString(),
+          memories,
+          messages
+        };
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+        const dl = document.createElement('a');
+        dl.setAttribute("href", dataStr);
+        dl.setAttribute("download", `ruang-jejak-cadangan-${Date.now()}.json`);
+        document.body.appendChild(dl);
+        dl.click();
+        dl.remove();
+      };
+
+      const handleImportFile = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const parsed = JSON.parse(event.target.result);
+            onImportBackup(parsed);
+          } catch (err) {
+            alert('Gagal membaca berkas JSON cadangan.');
+          }
+        };
+        reader.readAsText(file);
+      };
+
+      const filteredAdminMemories = memories.filter(m => {
+        if (!adminSearch.trim()) return true;
+        const q = adminSearch.toLowerCase().trim();
+        return (m.title && m.title.toLowerCase().includes(q)) || (m.proker && m.proker.toLowerCase().includes(q));
+      });
+
+      return (
+        <div className="modal-backdrop active" role="dialog" aria-modal="true">
+          <div className="admin-modal-container">
+            <div className="admin-modal-header">
+              <div className="admin-header-title">
+                <div className="admin-avatar"><i className="fa-solid fa-user-gear"></i></div>
+                <div>
+                  <h3 className="admin-title">Dasbor Arsiparis & Admin</h3>
+                  <span className="admin-sub">Kelola kenangan proker, unggah foto dokumentasi, dan pesan apresiasi</span>
+                </div>
+              </div>
+              <div className="admin-header-actions">
+                <button className="btn btn-outline btn-sm" onClick={onLogout}>
+                  <i className="fa-solid fa-arrow-right-from-bracket"></i> Keluar
+                </button>
+                <button className="modal-close-btn relative" onClick={onClose} aria-label="Tutup">
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+
+            {/* Admin Tabs */}
+            <div className="admin-tabs">
+              <button
+                className={`admin-tab ${activeTab === 'tabUpload' ? 'active' : ''}`}
+                onClick={() => setActiveTab('tabUpload')}
+              >
+                <i className="fa-solid fa-cloud-arrow-up"></i> Unggah Foto Baru
+              </button>
+              <button
+                className={`admin-tab ${activeTab === 'tabManage' ? 'active' : ''}`}
+                onClick={() => setActiveTab('tabManage')}
+              >
+                <i className="fa-solid fa-photo-film"></i> Kelola Foto ({memories.length})
+              </button>
+              <button
+                className={`admin-tab ${activeTab === 'tabMessages' ? 'active' : ''}`}
+                onClick={() => setActiveTab('tabMessages')}
+              >
+                <i className="fa-solid fa-comments"></i> Kelola Pesan ({messages.length})
+              </button>
+              <button
+                className={`admin-tab ${activeTab === 'tabSettings' ? 'active' : ''}`}
+                onClick={() => setActiveTab('tabSettings')}
+              >
+                <i className="fa-solid fa-sliders"></i> Cadangan Data
+              </button>
+            </div>
+
+            {/* Tab Content */}
+            <div className="admin-modal-body">
+              {/* TAB 1: UPLOAD FOTO */}
+              {activeTab === 'tabUpload' && (
+                <div className="tab-panel active">
+                  <form className="upload-form" onSubmit={handleUploadSubmit}>
+                    <div className="upload-grid-layout">
+                      {/* Dropzone Column */}
+                      <div className="dropzone-column">
+                        <label className="form-label">Foto Dokumentasi Kenangan</label>
+                        <div
+                          className="dropzone-box"
+                          onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                              handleImageFile(e.dataTransfer.files[0]);
+                            }
+                          }}
+                        >
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            accept="image/*"
+                            className="file-input-hidden"
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files[0]) {
+                                handleImageFile(e.target.files[0]);
+                              }
+                            }}
+                          />
+
+                          {!photoPreview ? (
+                            <div className="dropzone-prompt">
+                              <div className="dropzone-icon"><i className="fa-solid fa-images"></i></div>
+                              <h4>Pilih atau Tarik Foto ke Sini</h4>
+                              <p>Format JPG, PNG, WEBP. Teroptimasi otomatis.</p>
+                              <span className="btn btn-sm btn-outline mt-2">Pilih Berkas Foto</span>
+                            </div>
+                          ) : (
+                            <div className="dropzone-preview">
+                              <img src={photoPreview} alt="Pratinjau Foto" />
+                              <button
+                                type="button"
+                                className="btn-change-photo"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setPhotoPreview(null);
+                                }}
+                              >
+                                <i className="fa-solid fa-arrow-rotate-left"></i> Ganti
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="url-alt-wrapper">
+                          <span className="url-divider">atau gunakan tautan gambar (opsional)</span>
+                          <div className="url-input-group">
+                            <input
+                              type="url"
+                              className="form-input"
+                              value={urlInput}
+                              onChange={(e) => setUrlInput(e.target.value)}
+                              placeholder="https://images.unsplash.com/..."
+                            />
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline"
+                              onClick={() => {
+                                if (urlInput.trim()) setPhotoPreview(urlInput.trim());
+                              }}
+                            >
+                              Muat URL
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Metadata Fields */}
+                      <div className="metadata-column">
+                        <div className="form-group">
+                          <label className="form-label">Judul Momen / Foto *</label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="Contoh: Evaluasi Malam Terakhir & Pelukan Haru"
+                            required
+                          />
+                        </div>
+
+                        <div className="form-row">
+                          <div className="form-group col-half">
+                            <label className="form-label">Program Kerja (Proker) *</label>
+                            <input
+                              type="text"
+                              className="form-input"
+                              value={proker}
+                              onChange={(e) => setProker(e.target.value)}
+                              placeholder="Contoh: Makrab 2024"
+                              required
+                            />
+                          </div>
+                          <div className="form-group col-half">
+                            <label className="form-label">Tanggal Kegiatan</label>
+                            <input
+                              type="date"
+                              className="form-input"
+                              value={date}
+                              onChange={(e) => setDate(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="form-group">
+                          <label className="form-label">Kakak / Pengurus Terkait (Pisahkan dengan koma)</label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={people}
+                            onChange={(e) => setPeople(e.target.value)}
+                            placeholder="Contoh: Kak Dika, Kak Sarah, Kak Reza"
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label className="form-label">Catatan & Cerita di Balik Layar *</label>
+                          <textarea
+                            className="form-input textarea-field"
+                            rows="4"
+                            value={story}
+                            onChange={(e) => setStory(e.target.value)}
+                            placeholder="Tuliskan cerita menarik, tantangan bersama, atau apresiasi untuk momen ini..."
+                            required
+                          ></textarea>
+                        </div>
+
+                        <div className="form-checkbox-group">
+                          <label className="custom-checkbox">
+                            <input
+                              type="checkbox"
+                              checked={featured}
+                              onChange={(e) => setFeatured(e.target.checked)}
+                            />
+                            <span className="checkmark"></span>
+                            <span className="checkbox-text">Sematkan sebagai Momen Sorotan (Featured)</span>
+                          </label>
+                        </div>
+
+                        <div className="form-actions mt-3">
+                          <button type="submit" className="btn btn-primary btn-lg">
+                            <i className="fa-solid fa-cloud-arrow-up"></i> Simpan ke Ruang Jejak
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              {/* TAB 2: KELOLA DAFTAR FOTO */}
+              {activeTab === 'tabManage' && (
+                <div className="tab-panel active">
+                  <div className="manage-toolbar">
+                    <div className="search-input-wrapper sm">
+                      <i className="fa-solid fa-magnifying-glass search-icon"></i>
+                      <input
+                        type="text"
+                        value={adminSearch}
+                        onChange={(e) => setAdminSearch(e.target.value)}
+                        placeholder="Cari foto berdasarkan judul atau proker..."
+                      />
+                    </div>
+                    <div className="manage-stats-pill">
+                      Total Foto: <strong>{filteredAdminMemories.length}</strong>
+                    </div>
+                  </div>
+
+                  <div className="manage-table-container">
+                    <table className="data-table">
+                      <thead>
+                        <tr>
+                          <th>Pratinjau</th>
+                          <th>Judul & Tanggal</th>
+                          <th>Program Kerja</th>
+                          <th>Kakak Terlibat</th>
+                          <th>Sorotan</th>
+                          <th className="text-right">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredAdminMemories.length > 0 ? (
+                          filteredAdminMemories.map(m => {
+                            const peopleStr = Array.isArray(m.people) ? m.people.join(', ') : (m.people || '-');
+                            return (
+                              <tr key={m.id}>
+                                <td>
+                                  <img src={m.image} className="table-thumb" alt={m.title} />
+                                </td>
+                                <td>
+                                  <strong>{m.title}</strong><br />
+                                  <small className="text-muted">{formatDateIndonesian(m.date)}</small>
+                                </td>
+                                <td><span className="person-tag">{m.proker}</span></td>
+                                <td><small>{peopleStr}</small></td>
+                                <td>
+                                  <button
+                                    className={`btn btn-sm ${m.featured ? 'btn-primary' : 'btn-outline'}`}
+                                    onClick={() => onToggleFeatured(m.id)}
+                                    title="Ubah status sorotan"
+                                  >
+                                    <i className="fa-solid fa-thumbtack"></i> {m.featured ? 'Ya' : 'Tidak'}
+                                  </button>
+                                </td>
+                                <td className="text-right">
+                                  <button
+                                    className="btn-icon danger"
+                                    onClick={() => onDeleteMemory(m.id)}
+                                    title="Hapus kenangan ini"
+                                  >
+                                    <i className="fa-regular fa-trash-can"></i>
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })
+                        ) : (
+                          <tr>
+                            <td colSpan="6" className="text-center text-muted" style={{ padding: '2rem' }}>
+                              Tidak ada foto yang cocok.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: KELOLA PESAN */}
+              {activeTab === 'tabMessages' && (
+                <div className="tab-panel active">
+                  <div className="manage-toolbar">
+                    <p className="text-muted">Daftar semua pesan apresiasi dan surat kenangan yang telah terkirim.</p>
+                  </div>
+
+                  <div className="manage-table-container">
+                    <table className="data-table">
+                      <thead>
+                        <tr>
+                          <th>Pengirim</th>
+                          <th>Untuk Kakak</th>
+                          <th>Isi Pesan</th>
+                          <th>Tanggal</th>
+                          <th className="text-right">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {messages.length > 0 ? (
+                          messages.map(msg => (
+                            <tr key={msg.id}>
+                              <td><strong>{msg.sender}</strong></td>
+                              <td><span className="person-tag">{msg.recipient}</span></td>
+                              <td><small>“{msg.body}”</small></td>
+                              <td><small className="text-muted">{msg.date}</small></td>
+                              <td className="text-right">
+                                <button
+                                  className="btn-icon danger"
+                                  onClick={() => onDeleteMessage(msg.id)}
+                                  title="Hapus pesan ini"
+                                >
+                                  <i className="fa-regular fa-trash-can"></i>
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="5" className="text-center text-muted" style={{ padding: '2rem' }}>
+                              Belum ada surat tersimpan.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 4: PENGATURAN & BACKUP */}
+              {activeTab === 'tabSettings' && (
+                <div className="tab-panel active">
+                  <div className="settings-card-grid">
+                    <div className="settings-card">
+                      <h4><i className="fa-solid fa-file-export"></i> Cadangkan Data (Ekspor JSON)</h4>
+                      <p>Unduh seluruh data galeri, foto, dan surat kenangan ke dalam berkas cadangan JSON di perangkatmu.</p>
+                      <button className="btn btn-outline mt-2" onClick={exportBackupJSON}>
+                        <i className="fa-solid fa-download"></i> Unduh Cadangan JSON
+                      </button>
+                    </div>
+
+                    <div className="settings-card">
+                      <h4><i className="fa-solid fa-file-import"></i> Pulihkan Data (Impor JSON)</h4>
+                      <p>Muat berkas cadangan JSON yang sebelumnya pernah diunduh.</p>
+                      <input
+                        type="file"
+                        ref={importInputRef}
+                        accept=".json"
+                        className="file-input-hidden"
+                        onChange={handleImportFile}
+                      />
+                      <button
+                        className="btn btn-outline mt-2"
+                        onClick={() => importInputRef.current && importInputRef.current.click()}
+                      >
+                        <i className="fa-solid fa-upload"></i> Pilih Berkas Impor
+                      </button>
+                    </div>
+
+                    <div className="settings-card danger">
+                      <h4><i className="fa-solid fa-rotate-left"></i> Pulihkan Kenangan Bawaan</h4>
+                      <p>Kembalikan data galeri dan pesan ke contoh awal yang rapi dan elegan.</p>
+                      <button className="btn btn-outline-danger mt-2" onClick={onResetDefaults}>
+                        <i className="fa-solid fa-arrow-rotate-left"></i> Reset ke Data Bawaan
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ============================================================================
+    // SUB-COMPONENT: DetailModal (Lightbox)
+    // ============================================================================
+    function DetailModal({ memory, isLiked, isAdmin, onClose, onDeleteMemory, onToggleLike, onShare }) {
+      const peopleList = Array.isArray(memory.people) ? memory.people : (memory.people ? memory.people.split(',') : []);
+
+      return (
+        <div className="modal-backdrop active" role="dialog" aria-modal="true">
+          <div className="detail-modal-container">
+            <button className="modal-close-btn" onClick={onClose} aria-label="Tutup">
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+
+            <div className="detail-grid">
+              <div className="detail-media">
+                <img src={memory.image} alt={memory.title} />
+                <div className="detail-badge-corner">{memory.proker}</div>
+              </div>
+
+              <div className="detail-info">
+                <div className="detail-meta-top">
+                  <span className="detail-date">
+                    <i className="fa-regular fa-calendar"></i> {formatDateIndonesian(memory.date)}
+                  </span>
+                  <span
+                    className={`detail-likes-pill ${isLiked ? 'liked' : ''}`}
+                    onClick={onToggleLike}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <i className={`${isLiked ? 'fa-solid' : 'fa-regular'} fa-heart`}></i> {memory.likes || 0} Suka
+                  </span>
+                </div>
+
+                <h3 className="detail-title">{memory.title}</h3>
+
+                <div className="detail-people-box">
+                  <span className="detail-people-label"><i className="fa-solid fa-users"></i> Kakak & Pengurus:</span>
+                  <div className="detail-people-tags">
+                    {peopleList.length > 0 ? (
+                      peopleList.map((p, idx) => (
+                        <span key={idx} className="person-tag">{p.trim()}</span>
+                      ))
+                    ) : (
+                      <span className="person-tag">Seluruh Panitia & Pengurus</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="detail-story-box">
+                  <h5 className="story-heading">Cerita di Balik Layar</h5>
+                  <p className="detail-story-text">{memory.story}</p>
+                </div>
+
+                <div className="detail-footer-actions">
+                  <button className="btn btn-outline btn-sm" onClick={onShare}>
+                    <i className="fa-solid fa-share-nodes"></i> Bagikan
+                  </button>
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      className="btn btn-outline-danger btn-sm"
+                      onClick={() => onDeleteMemory(memory.id)}
+                      title="Hapus foto ini (Admin)"
+                    >
+                      <i className="fa-regular fa-trash-can"></i> Hapus Foto
                     </button>
                   )}
                 </div>
               </div>
             </div>
-
-            {/* Filter Chips */}
-            <div className="filter-scroll-wrapper">
-              <div className="filter-chips">
-                <button
-                  className={`chip ${activeFilter === 'all' ? 'active' : ''}`}
-                  onClick={() => setActiveFilter('all')}
-                >
-                  Semua Momen
-                </button>
-                {uniqueProkers.map(proker => (
-                  <button
-                    key={proker}
-                    className={`chip ${activeFilter === proker ? 'active' : ''}`}
-                    onClick={() => setActiveFilter(proker)}
-                  >
-                    {proker}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Photo Cards Grid */}
-            {isMemoriesLoading ? (
-              <div style={{ textAlign: 'center', padding: '3.5rem 1rem', color: 'var(--accent-gold)' }}>
-                <i className="fa-solid fa-circle-notch fa-spin fa-2x" style={{ marginBottom: '1rem', display: 'block' }}></i>
-                <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '0.95rem', opacity: 0.85 }}>Memuat galeri kenangan...</p>
-              </div>
-            ) : filteredMemories.length > 0 ? (
-              <div className="gallery-grid">
-                {filteredMemories.map(m => {
-                  const isLiked = likedMemories.has(m.id);
-                  const peopleList = Array.isArray(m.people) ? m.people : (m.people ? m.people.split(',') : []);
-                  const peoplePreview = peopleList.length > 0
-                    ? peopleList.slice(0, 2).join(', ') + (peopleList.length > 2 ? ` +${peopleList.length - 2}` : '')
-                    : 'BPH & Panitia';
-
-                  return (
-                    <article
-                      key={m.id}
-                      className="memory-card"
-                      onClick={() => setSelectedDetailMemory(m)}
-                      tabIndex={0}
-                      role="button"
-                    >
-                      <div className="memory-media-wrap">
-                        <img src={m.image} alt={m.title} loading="lazy" />
-                        <span className="memory-proker-tag">{m.proker}</span>
-                        {m.featured && (
-                          <span className="featured-pin">
-                            <i className="fa-solid fa-thumbtack"></i> Sorotan
-                          </span>
-                        )}
-                        {isAdmin && (
-                          <button
-                            type="button"
-                            className="admin-card-delete-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteMemory(m.id);
-                            }}
-                            title="Hapus foto ini (Admin)"
-                            aria-label={`Hapus foto ${m.title}`}
-                          >
-                            <i className="fa-solid fa-trash-can"></i>
-                          </button>
-                        )}
-                      </div>
-                      <div className="memory-body">
-                        <div className="memory-date">
-                          <i className="fa-regular fa-calendar"></i> {formatDateIndonesian(m.date)}
-                        </div>
-                        <h3 className="memory-title">{m.title}</h3>
-                        <p className="memory-story-snippet">{m.story}</p>
-                        <div className="memory-card-footer">
-                          <div className="memory-people-preview" title={`Kakak & Pengurus: ${peopleList.join(', ')}`}>
-                            <i className="fa-solid fa-users"></i>
-                            <span>{peoplePreview}</span>
-                          </div>
-                          <button
-                            className={`memory-like-btn ${isLiked ? 'liked' : ''}`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleLike(m.id);
-                            }}
-                            title="Sukai momen ini"
-                          >
-                            <i className={`${isLiked ? 'fa-solid' : 'fa-regular'} fa-heart`}></i>
-                            <span className="likes-num">{m.likes || 0}</span>
-                          </button>
-                        </div>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="empty-state">
-                <div className="empty-icon"><i className="fa-regular fa-folder-open"></i></div>
-                <h3>Belum ada kenangan yang cocok</h3>
-                <p>Coba kata kunci lain atau pilih kategori proker yang berbeda.</p>
-                <button
-                  className="btn btn-outline"
-                  onClick={() => { setActiveFilter('all'); setSearchQuery(''); }}
-                >
-                  Tampilkan Semua
-                </button>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* TIMELINE SECTION */}
-        <section className="section-timeline" id="linimasa">
-          <div className="container">
-            <div className="section-header text-center">
-              <span className="section-subtitle">Langkah Demi Langkah</span>
-              <h2 className="section-title">Perjalanan Satu Periode</h2>
-              <p className="section-desc max-600">
-                Setiap fase menyimpan cerita unik; dari masa orientasi yang canggung hingga puncak proker yang menguras emosi.
-              </p>
-            </div>
-
-            <div className="timeline-container">
-              {DEFAULT_TIMELINE.map((item, idx) => (
-                <div key={idx} className="timeline-item">
-                  <div className="timeline-marker"></div>
-                  <div className="timeline-card">
-                    <span className="timeline-period">{item.period}</span>
-                    <h3 className="timeline-title">{item.title}</h3>
-                    <p className="timeline-desc">{item.desc}</p>
-                    <div className="timeline-quote">{item.quote}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* WALL OF GRATITUDE / MESSAGES SECTION */}
-        <section className="section-messages" id="pesan">
-          <div className="container">
-            <div className="section-header between">
-              <div>
-                <span className="section-subtitle">Apresiasi & Doa</span>
-                <h2 className="section-title">Surat Kasih untuk Kakak</h2>
-                <p className="section-desc">Pesan tulus dari adik-adik tingkat yang tak sempat terucap secara langsung.</p>
-              </div>
-              <button className="btn btn-primary" onClick={() => setIsWriteModalOpen(true)}>
-                <i className="fa-solid fa-pen-nib"></i> Titip Pesan Baru
-              </button>
-            </div>
-
-            <div className="messages-grid">
-              {messages.length > 0 ? (
-                messages.map(msg => (
-                  <article key={msg.id} className={`letter-note-card theme-${msg.theme || 'parchment'}`}>
-                    <div className="letter-note-pin"></div>
-                    <div className="note-to-badge">
-                      <i className="fa-solid fa-envelope-open-text"></i> Kepada: {msg.recipient}
-                    </div>
-                    {msg.prokerRef && (
-                      <span className="note-proker-ref">
-                        <i className="fa-solid fa-bookmark"></i> Momen: {msg.prokerRef}
-                      </span>
-                    )}
-                    <div className="note-content-text">
-                      “{msg.body}”
-                    </div>
-                    <div className="note-sender-info">
-                      <span className="note-sender-name">Dari: {msg.sender}</span>
-                      <span className="note-date-text">{msg.date}</span>
-                    </div>
-                  </article>
-                ))
-              ) : (
-                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem' }}>
-                  <p className="text-muted">Belum ada surat yang dipajang. Jadilah yang pertama menitipkan pesan untuk kakak pengurus!</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-      </main>
-
-      {/* FOOTER */}
-      <footer className="site-footer">
-        <div className="container footer-content">
-          <div className="footer-brand">
-            <div className="brand-title">Ruang Jejak</div>
-            <p className="footer-tagline">
-              Didedikasikan untuk para pemimpin, mentor, dan kakak terhebat dalam kepengurusan. Terima kasih telah menjadi rumah dan lentera.
-            </p>
-          </div>
-          <div className="footer-links">
-            <span className="footer-label">Navigasi Pintas</span>
-            <a href="#galeri">Koleksi Foto</a>
-            <a href="#linimasa">Perjalanan Proker</a>
-            <a href="#pesan">Papan Ucapan</a>
-          </div>
-          <div className="footer-admin-link">
-            <span className="footer-label">Area Pengurus</span>
-            <button
-              className="btn-text-link"
-              onClick={() => {
-                if (isAdmin) {
-                  setIsAdminModalOpen(true);
-                } else {
-                  setIsEnvelopeOpen(true);
-                  setIsEnvelopeUnfolded(false);
-                }
-              }}
-            >
-              <i className="fa-solid fa-shield-halved"></i> Kelola Arsip (Admin)
-            </button>
-            <p className="footer-copy">© 2024–2026 Keluarga Besar Organisasi. Selamanya bersaudara.</p>
           </div>
         </div>
-      </footer>
-
-      {/* ============================================================== */}
-      {/* 3D INTERACTIVE ENVELOPE LOGIN MODAL                            */}
-      {/* ============================================================== */}
-      <EnvelopeModal
-        isOpen={isEnvelopeOpen}
-        isUnfolded={isEnvelopeUnfolded}
-        onClose={() => { setIsEnvelopeOpen(false); setIsEnvelopeUnfolded(false); }}
-        onUnfold={() => {
-          setIsEnvelopeUnfolded(true);
-          playWaxBreakSound();
-          playPaperRustleSound();
-        }}
-        onLogin={handleLogin}
-      />
-
-      {/* ============================================================== */}
-      {/* ADMIN DASHBOARD MODAL                                          */}
-      {/* ============================================================== */}
-      {isAdminModalOpen && (
-        <AdminModal
-          isOpen={isAdminModalOpen}
-          activeTab={adminActiveTab}
-          setActiveTab={setAdminActiveTab}
-          onClose={() => setIsAdminModalOpen(false)}
-          onLogout={handleLogout}
-          memories={memories}
-          messages={messages}
-          onAddMemory={handleAddMemory}
-          onToggleFeatured={handleToggleFeatured}
-          onDeleteMemory={handleDeleteMemory}
-          onDeleteMessage={handleDeleteMessage}
-          onResetDefaults={handleResetDefaults}
-          onImportBackup={handleImportBackup}
-        />
-      )}
-
-      {/* ============================================================== */}
-      {/* DETAIL LIGHTBOX MODAL                                          */}
-      {/* ============================================================== */}
-      {selectedDetailMemory && (
-        <DetailModal
-          memory={selectedDetailMemory}
-          isLiked={likedMemories.has(selectedDetailMemory.id)}
-          isAdmin={isAdmin}
-          onClose={() => setSelectedDetailMemory(null)}
-          onDeleteMemory={(id) => {
-            handleDeleteMemory(id);
-            setSelectedDetailMemory(null);
-          }}
-          onToggleLike={() => toggleLike(selectedDetailMemory.id)}
-          onShare={() => {
-            if (navigator.share) {
-              navigator.share({
-                title: selectedDetailMemory.title,
-                text: `Kenangan ${selectedDetailMemory.proker}: "${selectedDetailMemory.title}" bersama kakak organisasi.`,
-                url: window.location.href
-              }).catch(() => {});
-            } else {
-              navigator.clipboard.writeText(window.location.href);
-              showToast('Tautan kenangan disalin ke papan klip!', 'info');
-            }
-          }}
-        />
-      )}
-
-      {/* ============================================================== */}
-      {/* WRITE MESSAGE MODAL                                            */}
-      {/* ============================================================== */}
-      {isWriteModalOpen && (
-        <WriteModal
-          isOpen={isWriteModalOpen}
-          onClose={() => setIsWriteModalOpen(false)}
-          onSubmit={handleAddMessage}
-        />
-      )}
-
-      {/* Toast Notification Container */}
-      <div className="toast-container" aria-live="polite">
-        {toasts.map(t => (
-          <div key={t.id} className={`toast-notification toast-${t.type}`}>
-            <i className={`toast-icon ${t.type === 'success' ? 'fa-solid fa-circle-check' : t.type === 'error' ? 'fa-solid fa-circle-exclamation' : 'fa-solid fa-circle-info'}`}></i>
-            <span className="toast-message">{t.message}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ============================================================================
-// SUB-COMPONENT: EnvelopeModal
-// ============================================================================
-function EnvelopeModal({ isOpen, isUnfolded, onClose, onUnfold, onLogin }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPwd, setShowPwd] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
-
-  if (!isOpen) return null;
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const success = onLogin(username, password);
-    if (!success) {
-      setErrorMsg('Nama pengguna atau kata sandi tidak cocok. Gunakan akun uji coba yang tertera.');
-    } else {
-      setErrorMsg('');
-      setUsername('');
-      setPassword('');
+      );
     }
-  };
 
-  const fillQuickCreds = () => {
-    setUsername('ADALAH');
-    setPassword('KOMISI2');
-    setErrorMsg('');
-  };
+    // ============================================================================
+    // SUB-COMPONENT: WriteModal (Surat Kasih untuk Kakak)
+    // ============================================================================
+    function WriteModal({ isOpen, onClose, onSubmit }) {
+      const [sender, setSender] = useState('');
+      const [recipient, setRecipient] = useState('');
+      const [prokerRef, setProkerRef] = useState('');
+      const [body, setBody] = useState('');
+      const [theme, setTheme] = useState('parchment');
 
-  return (
-    <div className="modal-backdrop active" role="dialog" aria-modal="true">
-      <div className="envelope-modal-wrapper">
-        <button className="modal-close-btn" onClick={onClose} aria-label="Tutup">
-          <i className="fa-solid fa-xmark"></i>
-        </button>
+      if (!isOpen) return null;
 
-        <div className="envelope-stage">
-          <div className={`envelope-container ${isUnfolded ? 'opened' : ''}`}>
-            <div className="envelope-back"></div>
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        const newMsg = {
+          id: 'msg-' + Date.now(),
+          sender: sender.trim(),
+          recipient: recipient.trim(),
+          prokerRef: prokerRef.trim(),
+          body: body.trim(),
+          date: formatDateIndonesian(new Date().toISOString().split('T')[0]),
+          theme
+        };
+        onSubmit(newMsg);
+        onClose();
 
-            {/* The sliding letter form */}
-            <div className="envelope-letter">
-              <div className="letter-inner">
-                <div className="letter-header">
-                  <span className="letter-seal-mini"><i className="fa-solid fa-stamp"></i></span>
-                  <span className="letter-tag">Akses Resmi Pengurus</span>
-                  <h3 className="letter-title">Pintu Ruang Kenangan</h3>
-                  <p className="letter-sub">Masuk untuk mengelola dokumentasi proker atau menambah foto baru.</p>
-                </div>
+        // Scroll smoothly to messages section
+        setTimeout(() => {
+          const el = document.getElementById('pesan');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 200);
+      };
 
-                <form className="letter-form" onSubmit={handleSubmit} autoComplete="off">
-                  <div className="form-group">
-                    <label htmlFor="reactAdminUser"><i className="fa-regular fa-user"></i> Nama Pengguna</label>
+      return (
+        <div className="modal-backdrop active" role="dialog" aria-modal="true">
+          <div className="envelope-style-modal">
+            <button className="modal-close-btn" onClick={onClose} aria-label="Tutup">
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+
+            <div className="parchment-letter-card">
+              <div className="parchment-header">
+                <span className="parchment-tag">Surat Kasih & Ucapan</span>
+                <h3 className="parchment-title">Torehkan Jejak Kata untuk Kakak</h3>
+                <p className="parchment-sub">Kata-katamu adalah pelipur lelah terbaik bagi kakak pengurus yang telah mendedikasikan energinya.</p>
+              </div>
+
+              <form className="letter-form" onSubmit={handleSubmit}>
+                <div className="form-row">
+                  <div className="form-group col-half">
+                    <label className="form-label">Namamu / Inisial *</label>
                     <input
                       type="text"
-                      id="reactAdminUser"
                       className="form-input"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="Masukkan username"
+                      value={sender}
+                      onChange={(e) => setSender(e.target.value)}
+                      placeholder="Contoh: Rian (Divisi Acara 24)"
                       required
                     />
                   </div>
-
-                  <div className="form-group">
-                    <label htmlFor="reactAdminPwd"><i className="fa-solid fa-key"></i> Kata Sandi</label>
-                    <div className="password-wrapper">
-                      <input
-                        type={showPwd ? 'text' : 'password'}
-                        id="reactAdminPwd"
-                        className="form-input"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Masukkan kata sandi"
-                        required
-                      />
-                      <button
-                        type="button"
-                        className="toggle-pwd-btn"
-                        onClick={() => setShowPwd(p => !p)}
-                        aria-label="Tampilkan sandi"
-                      >
-                        <i className={showPwd ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'}></i>
-                      </button>
-                    </div>
-                  </div>
-
-                  {errorMsg && (
-                    <div className="login-feedback error">
-                      <i className="fa-solid fa-circle-exclamation"></i> {errorMsg}
-                    </div>
-                  )}
-
-                  <button type="submit" className="btn btn-primary w-100 btn-submit-login">
-                    <i className="fa-solid fa-arrow-right-to-bracket"></i> Masuk ke Dasbor Admin
-                  </button>
-
-                  <div className="quick-admin-hint">
-                    <p className="hint-title"><i className="fa-solid fa-circle-info"></i> Info Akun Akses (Uji Coba):</p>
-                    <div className="hint-badges">
-                      <span className="credential-pill" onClick={fillQuickCreds} title="Klik untuk isi otomatis">
-                        Username: <strong>ADALAH</strong> | Sandi: <strong>KOMISI2</strong>
-                      </span>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-
-            <div className="envelope-front-pocket"></div>
-
-            {/* Top flap with wax seal */}
-            <div className="envelope-flap">
-              <div
-                className="wax-seal"
-                onClick={onUnfold}
-                title="Klik Segel Lilin untuk Membuka Amplop"
-                role="button"
-                tabIndex={0}
-              >
-                <div className="wax-seal-inner">
-                  <span className="wax-monogram">RJ</span>
-                </div>
-                <div className="wax-pulse"></div>
-              </div>
-            </div>
-          </div>
-
-          {!isUnfolded && (
-            <div className="envelope-instruction">
-              <i className="fa-regular fa-hand-pointer pulse-icon"></i>
-              <span>Ketuk segel lilin merah di atas untuk membuka amplop</span>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================================
-// SUB-COMPONENT: AdminModal
-// ============================================================================
-function AdminModal({
-  isOpen,
-  activeTab,
-  setActiveTab,
-  onClose,
-  onLogout,
-  memories,
-  messages,
-  onAddMemory,
-  onToggleFeatured,
-  onDeleteMemory,
-  onDeleteMessage,
-  onResetDefaults,
-  onImportBackup
-}) {
-  // Upload form state
-  const [photoPreview, setPhotoPreview] = useState(null);
-  const [urlInput, setUrlInput] = useState('');
-  const [title, setTitle] = useState('');
-  const [proker, setProker] = useState('');
-  const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
-  const [people, setPeople] = useState('');
-  const [story, setStory] = useState('');
-  const [featured, setFeatured] = useState(false);
-  const [adminSearch, setAdminSearch] = useState('');
-
-  const fileInputRef = useRef(null);
-  const importInputRef = useRef(null);
-
-  if (!isOpen) return null;
-
-  const handleImageFile = (file) => {
-    if (!file || !file.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const maxDim = 1200;
-        let w = img.width;
-        let h = img.height;
-        if (w > maxDim || h > maxDim) {
-          if (w > h) {
-            h = Math.round((h * maxDim) / w);
-            w = maxDim;
-          } else {
-            w = Math.round((w * maxDim) / h);
-            h = maxDim;
-          }
-        }
-        const canvas = document.createElement('canvas');
-        canvas.width = w;
-        canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
-        setPhotoPreview(canvas.toDataURL('image/webp', 0.4));
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleUploadSubmit = (e) => {
-    e.preventDefault();
-    const imgSrc = photoPreview || urlInput.trim();
-    if (!imgSrc) {
-      alert('Harap pilih berkas foto atau isi URL gambar!');
-      return;
-    }
-
-    const newMem = {
-      id: 'mem-' + Date.now(),
-      title: title.trim(),
-      proker: proker.trim(),
-      date: date || new Date().toISOString().split('T')[0],
-      image: imgSrc,
-      people: people.split(',').map(s => s.trim()).filter(Boolean),
-      story: story.trim(),
-      likes: 0,
-      featured
-    };
-
-    onAddMemory(newMem);
-    // Reset form
-    setPhotoPreview(null);
-    setUrlInput('');
-    setTitle('');
-    setProker('');
-    setPeople('');
-    setStory('');
-    setFeatured(false);
-    setActiveTab('tabManage');
-  };
-
-  const exportBackupJSON = () => {
-    const backupData = {
-      exportDate: new Date().toISOString(),
-      memories,
-      messages
-    };
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
-    const dl = document.createElement('a');
-    dl.setAttribute("href", dataStr);
-    dl.setAttribute("download", `ruang-jejak-cadangan-${Date.now()}.json`);
-    document.body.appendChild(dl);
-    dl.click();
-    dl.remove();
-  };
-
-  const handleImportFile = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const parsed = JSON.parse(event.target.result);
-        onImportBackup(parsed);
-      } catch (err) {
-        alert('Gagal membaca berkas JSON cadangan.');
-      }
-    };
-    reader.readAsText(file);
-  };
-
-  const filteredAdminMemories = memories.filter(m => {
-    if (!adminSearch.trim()) return true;
-    const q = adminSearch.toLowerCase().trim();
-    return (m.title && m.title.toLowerCase().includes(q)) || (m.proker && m.proker.toLowerCase().includes(q));
-  });
-
-  return (
-    <div className="modal-backdrop active" role="dialog" aria-modal="true">
-      <div className="admin-modal-container">
-        <div className="admin-modal-header">
-          <div className="admin-header-title">
-            <div className="admin-avatar"><i className="fa-solid fa-user-gear"></i></div>
-            <div>
-              <h3 className="admin-title">Dasbor Arsiparis & Admin</h3>
-              <span className="admin-sub">Kelola kenangan proker, unggah foto dokumentasi, dan pesan apresiasi</span>
-            </div>
-          </div>
-          <div className="admin-header-actions">
-            <button className="btn btn-outline btn-sm" onClick={onLogout}>
-              <i className="fa-solid fa-arrow-right-from-bracket"></i> Keluar
-            </button>
-            <button className="modal-close-btn relative" onClick={onClose} aria-label="Tutup">
-              <i className="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-        </div>
-
-        {/* Admin Tabs */}
-        <div className="admin-tabs">
-          <button
-            className={`admin-tab ${activeTab === 'tabUpload' ? 'active' : ''}`}
-            onClick={() => setActiveTab('tabUpload')}
-          >
-            <i className="fa-solid fa-cloud-arrow-up"></i> Unggah Foto Baru
-          </button>
-          <button
-            className={`admin-tab ${activeTab === 'tabManage' ? 'active' : ''}`}
-            onClick={() => setActiveTab('tabManage')}
-          >
-            <i className="fa-solid fa-photo-film"></i> Kelola Foto ({memories.length})
-          </button>
-          <button
-            className={`admin-tab ${activeTab === 'tabMessages' ? 'active' : ''}`}
-            onClick={() => setActiveTab('tabMessages')}
-          >
-            <i className="fa-solid fa-comments"></i> Kelola Pesan ({messages.length})
-          </button>
-          <button
-            className={`admin-tab ${activeTab === 'tabSettings' ? 'active' : ''}`}
-            onClick={() => setActiveTab('tabSettings')}
-          >
-            <i className="fa-solid fa-sliders"></i> Cadangan Data
-          </button>
-        </div>
-
-        {/* Tab Content */}
-        <div className="admin-modal-body">
-          {/* TAB 1: UPLOAD FOTO */}
-          {activeTab === 'tabUpload' && (
-            <div className="tab-panel active">
-              <form className="upload-form" onSubmit={handleUploadSubmit}>
-                <div className="upload-grid-layout">
-                  {/* Dropzone Column */}
-                  <div className="dropzone-column">
-                    <label className="form-label">Foto Dokumentasi Kenangan</label>
-                    <div
-                      className="dropzone-box"
-                      onClick={() => fileInputRef.current && fileInputRef.current.click()}
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                          handleImageFile(e.dataTransfer.files[0]);
-                        }
-                      }}
-                    >
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        accept="image/*"
-                        className="file-input-hidden"
-                        onChange={(e) => {
-                          if (e.target.files && e.target.files[0]) {
-                            handleImageFile(e.target.files[0]);
-                          }
-                        }}
-                      />
-
-                      {!photoPreview ? (
-                        <div className="dropzone-prompt">
-                          <div className="dropzone-icon"><i className="fa-solid fa-images"></i></div>
-                          <h4>Pilih atau Tarik Foto ke Sini</h4>
-                          <p>Format JPG, PNG, WEBP. Teroptimasi otomatis.</p>
-                          <span className="btn btn-sm btn-outline mt-2">Pilih Berkas Foto</span>
-                        </div>
-                      ) : (
-                        <div className="dropzone-preview">
-                          <img src={photoPreview} alt="Pratinjau Foto" />
-                          <button
-                            type="button"
-                            className="btn-change-photo"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setPhotoPreview(null);
-                            }}
-                          >
-                            <i className="fa-solid fa-arrow-rotate-left"></i> Ganti
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="url-alt-wrapper">
-                      <span className="url-divider">atau gunakan tautan gambar (opsional)</span>
-                      <div className="url-input-group">
-                        <input
-                          type="url"
-                          className="form-input"
-                          value={urlInput}
-                          onChange={(e) => setUrlInput(e.target.value)}
-                          placeholder="https://images.unsplash.com/..."
-                        />
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-outline"
-                          onClick={() => {
-                            if (urlInput.trim()) setPhotoPreview(urlInput.trim());
-                          }}
-                        >
-                          Muat URL
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Metadata Fields */}
-                  <div className="metadata-column">
-                    <div className="form-group">
-                      <label className="form-label">Judul Momen / Foto *</label>
-                      <input
-                        type="text"
-                        className="form-input"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Contoh: Evaluasi Malam Terakhir & Pelukan Haru"
-                        required
-                      />
-                    </div>
-
-                    <div className="form-row">
-                      <div className="form-group col-half">
-                        <label className="form-label">Program Kerja (Proker) *</label>
-                        <input
-                          type="text"
-                          className="form-input"
-                          value={proker}
-                          onChange={(e) => setProker(e.target.value)}
-                          placeholder="Contoh: Makrab 2024"
-                          required
-                        />
-                      </div>
-                      <div className="form-group col-half">
-                        <label className="form-label">Tanggal Kegiatan</label>
-                        <input
-                          type="date"
-                          className="form-input"
-                          value={date}
-                          onChange={(e) => setDate(e.target.value)}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label">Kakak / Pengurus Terkait (Pisahkan dengan koma)</label>
-                      <input
-                        type="text"
-                        className="form-input"
-                        value={people}
-                        onChange={(e) => setPeople(e.target.value)}
-                        placeholder="Contoh: Kak Dika, Kak Sarah, Kak Reza"
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label">Catatan & Cerita di Balik Layar *</label>
-                      <textarea
-                        className="form-input textarea-field"
-                        rows="4"
-                        value={story}
-                        onChange={(e) => setStory(e.target.value)}
-                        placeholder="Tuliskan cerita menarik, tantangan bersama, atau apresiasi untuk momen ini..."
-                        required
-                      ></textarea>
-                    </div>
-
-                    <div className="form-checkbox-group">
-                      <label className="custom-checkbox">
-                        <input
-                          type="checkbox"
-                          checked={featured}
-                          onChange={(e) => setFeatured(e.target.checked)}
-                        />
-                        <span className="checkmark"></span>
-                        <span className="checkbox-text">Sematkan sebagai Momen Sorotan (Featured)</span>
-                      </label>
-                    </div>
-
-                    <div className="form-actions mt-3">
-                      <button type="submit" className="btn btn-primary btn-lg">
-                        <i className="fa-solid fa-cloud-arrow-up"></i> Simpan ke Ruang Jejak
-                      </button>
-                    </div>
+                  <div className="form-group col-half">
+                    <label className="form-label">Ditujukan Kepada *</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={recipient}
+                      onChange={(e) => setRecipient(e.target.value)}
+                      placeholder="Contoh: Kak Zahra / Seluruh BPH"
+                      required
+                    />
                   </div>
                 </div>
-              </form>
-            </div>
-          )}
 
-          {/* TAB 2: KELOLA DAFTAR FOTO */}
-          {activeTab === 'tabManage' && (
-            <div className="tab-panel active">
-              <div className="manage-toolbar">
-                <div className="search-input-wrapper sm">
-                  <i className="fa-solid fa-magnifying-glass search-icon"></i>
+                <div className="form-group">
+                  <label className="form-label">Momen / Proker Paling Berkesan Bersama Beliau</label>
                   <input
                     type="text"
-                    value={adminSearch}
-                    onChange={(e) => setAdminSearch(e.target.value)}
-                    placeholder="Cari foto berdasarkan judul atau proker..."
+                    className="form-input"
+                    value={prokerRef}
+                    onChange={(e) => setProkerRef(e.target.value)}
+                    placeholder="Contoh: Waktu gladi bersih Makrab & evaluasi tengah malam"
                   />
                 </div>
-                <div className="manage-stats-pill">
-                  Total Foto: <strong>{filteredAdminMemories.length}</strong>
-                </div>
-              </div>
 
-              <div className="manage-table-container">
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>Pratinjau</th>
-                      <th>Judul & Tanggal</th>
-                      <th>Program Kerja</th>
-                      <th>Kakak Terlibat</th>
-                      <th>Sorotan</th>
-                      <th className="text-right">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredAdminMemories.length > 0 ? (
-                      filteredAdminMemories.map(m => {
-                        const peopleStr = Array.isArray(m.people) ? m.people.join(', ') : (m.people || '-');
-                        return (
-                          <tr key={m.id}>
-                            <td>
-                              <img src={m.image} className="table-thumb" alt={m.title} />
-                            </td>
-                            <td>
-                              <strong>{m.title}</strong><br />
-                              <small className="text-muted">{formatDateIndonesian(m.date)}</small>
-                            </td>
-                            <td><span className="person-tag">{m.proker}</span></td>
-                            <td><small>{peopleStr}</small></td>
-                            <td>
-                              <button
-                                className={`btn btn-sm ${m.featured ? 'btn-primary' : 'btn-outline'}`}
-                                onClick={() => onToggleFeatured(m.id)}
-                                title="Ubah status sorotan"
-                              >
-                                <i className="fa-solid fa-thumbtack"></i> {m.featured ? 'Ya' : 'Tidak'}
-                              </button>
-                            </td>
-                            <td className="text-right">
-                              <button
-                                className="btn-icon danger"
-                                onClick={() => onDeleteMemory(m.id)}
-                                title="Hapus kenangan ini"
-                              >
-                                <i className="fa-regular fa-trash-can"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })
-                    ) : (
-                      <tr>
-                        <td colSpan="6" className="text-center text-muted" style={{ padding: '2rem' }}>
-                          Tidak ada foto yang cocok.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 3: KELOLA PESAN */}
-          {activeTab === 'tabMessages' && (
-            <div className="tab-panel active">
-              <div className="manage-toolbar">
-                <p className="text-muted">Daftar semua pesan apresiasi dan surat kenangan yang telah terkirim.</p>
-              </div>
-
-              <div className="manage-table-container">
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>Pengirim</th>
-                      <th>Untuk Kakak</th>
-                      <th>Isi Pesan</th>
-                      <th>Tanggal</th>
-                      <th className="text-right">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {messages.length > 0 ? (
-                      messages.map(msg => (
-                        <tr key={msg.id}>
-                          <td><strong>{msg.sender}</strong></td>
-                          <td><span className="person-tag">{msg.recipient}</span></td>
-                          <td><small>“{msg.body}”</small></td>
-                          <td><small className="text-muted">{msg.date}</small></td>
-                          <td className="text-right">
-                            <button
-                              className="btn-icon danger"
-                              onClick={() => onDeleteMessage(msg.id)}
-                              title="Hapus pesan ini"
-                            >
-                              <i className="fa-regular fa-trash-can"></i>
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="5" className="text-center text-muted" style={{ padding: '2rem' }}>
-                          Belum ada surat tersimpan.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 4: PENGATURAN & BACKUP */}
-          {activeTab === 'tabSettings' && (
-            <div className="tab-panel active">
-              <div className="settings-card-grid">
-                <div className="settings-card">
-                  <h4><i className="fa-solid fa-file-export"></i> Cadangkan Data (Ekspor JSON)</h4>
-                  <p>Unduh seluruh data galeri, foto, dan surat kenangan ke dalam berkas cadangan JSON di perangkatmu.</p>
-                  <button className="btn btn-outline mt-2" onClick={exportBackupJSON}>
-                    <i className="fa-solid fa-download"></i> Unduh Cadangan JSON
-                  </button>
+                <div className="form-group">
+                  <label className="form-label">Isi Surat / Ucapan Terima Kasih *</label>
+                  <textarea
+                    className="form-input textarea-field"
+                    rows="4"
+                    value={body}
+                    onChange={(e) => setBody(e.target.value)}
+                    placeholder="Tuliskan ucapan terima kasih, kesan berharga, dan doa untuk langkah kakak ke depannya..."
+                    required
+                  ></textarea>
                 </div>
 
-                <div className="settings-card">
-                  <h4><i className="fa-solid fa-file-import"></i> Pulihkan Data (Impor JSON)</h4>
-                  <p>Muat berkas cadangan JSON yang sebelumnya pernah diunduh.</p>
-                  <input
-                    type="file"
-                    ref={importInputRef}
-                    accept=".json"
-                    className="file-input-hidden"
-                    onChange={handleImportFile}
-                  />
-                  <button
-                    className="btn btn-outline mt-2"
-                    onClick={() => importInputRef.current && importInputRef.current.click()}
-                  >
-                    <i className="fa-solid fa-upload"></i> Pilih Berkas Impor
-                  </button>
+                <div className="form-group">
+                  <label className="form-label">Pilih Corak Kertas Surat</label>
+                  <div className="letter-theme-selector">
+                    <label className={`theme-choice ${theme === 'parchment' ? 'active' : ''}`}>
+                      <input
+                        type="radio"
+                        name="letterTheme"
+                        value="parchment"
+                        checked={theme === 'parchment'}
+                        onChange={() => setTheme('parchment')}
+                      />
+                      <span className="theme-preview bg-parchment"></span>
+                      <span>Klasik</span>
+                    </label>
+                    <label className={`theme-choice ${theme === 'sage' ? 'active' : ''}`}>
+                      <input
+                        type="radio"
+                        name="letterTheme"
+                        value="sage"
+                        checked={theme === 'sage'}
+                        onChange={() => setTheme('sage')}
+                      />
+                      <span className="theme-preview bg-sage"></span>
+                      <span>Sejuk</span>
+                    </label>
+                    <label className={`theme-choice ${theme === 'blush' ? 'active' : ''}`}>
+                      <input
+                        type="radio"
+                        name="letterTheme"
+                        value="blush"
+                        checked={theme === 'blush'}
+                        onChange={() => setTheme('blush')}
+                      />
+                      <span className="theme-preview bg-blush"></span>
+                      <span>Hangat</span>
+                    </label>
+                  </div>
                 </div>
 
-                <div className="settings-card danger">
-                  <h4><i className="fa-solid fa-rotate-left"></i> Pulihkan Kenangan Bawaan</h4>
-                  <p>Kembalikan data galeri dan pesan ke contoh awal yang rapi dan elegan.</p>
-                  <button className="btn btn-outline-danger mt-2" onClick={onResetDefaults}>
-                    <i className="fa-solid fa-arrow-rotate-left"></i> Reset ke Data Bawaan
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================================
-// SUB-COMPONENT: DetailModal (Lightbox)
-// ============================================================================
-function DetailModal({ memory, isLiked, isAdmin, onClose, onDeleteMemory, onToggleLike, onShare }) {
-  const peopleList = Array.isArray(memory.people) ? memory.people : (memory.people ? memory.people.split(',') : []);
-
-  return (
-    <div className="modal-backdrop active" role="dialog" aria-modal="true">
-      <div className="detail-modal-container">
-        <button className="modal-close-btn" onClick={onClose} aria-label="Tutup">
-          <i className="fa-solid fa-xmark"></i>
-        </button>
-
-        <div className="detail-grid">
-          <div className="detail-media">
-            <img src={memory.image} alt={memory.title} />
-            <div className="detail-badge-corner">{memory.proker}</div>
-          </div>
-
-          <div className="detail-info">
-            <div className="detail-meta-top">
-              <span className="detail-date">
-                <i className="fa-regular fa-calendar"></i> {formatDateIndonesian(memory.date)}
-              </span>
-              <span
-                className={`detail-likes-pill ${isLiked ? 'liked' : ''}`}
-                onClick={onToggleLike}
-                style={{ cursor: 'pointer' }}
-              >
-                <i className={`${isLiked ? 'fa-solid' : 'fa-regular'} fa-heart`}></i> {memory.likes || 0} Suka
-              </span>
-            </div>
-
-            <h3 className="detail-title">{memory.title}</h3>
-
-            <div className="detail-people-box">
-              <span className="detail-people-label"><i className="fa-solid fa-users"></i> Kakak & Pengurus:</span>
-              <div className="detail-people-tags">
-                {peopleList.length > 0 ? (
-                  peopleList.map((p, idx) => (
-                    <span key={idx} className="person-tag">{p.trim()}</span>
-                  ))
-                ) : (
-                  <span className="person-tag">Seluruh Panitia & Pengurus</span>
-                )}
-              </div>
-            </div>
-
-            <div className="detail-story-box">
-              <h5 className="story-heading">Cerita di Balik Layar</h5>
-              <p className="detail-story-text">{memory.story}</p>
-            </div>
-
-            <div className="detail-footer-actions">
-              <button className="btn btn-outline btn-sm" onClick={onShare}>
-                <i className="fa-solid fa-share-nodes"></i> Bagikan
-              </button>
-              {isAdmin && (
-                <button
-                  type="button"
-                  className="btn btn-outline-danger btn-sm"
-                  onClick={() => onDeleteMemory(memory.id)}
-                  title="Hapus foto ini (Admin)"
-                >
-                  <i className="fa-regular fa-trash-can"></i> Hapus Foto
+                <button type="submit" className="btn btn-primary w-100 btn-lg mt-3">
+                  <i className="fa-solid fa-paper-plane"></i> Kirim Surat ke Dinding Apresiasi
                 </button>
-              )}
+              </form>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
+      );
+    }
 
-// ============================================================================
-// SUB-COMPONENT: WriteModal (Surat Kasih untuk Kakak)
-// ============================================================================
-function WriteModal({ isOpen, onClose, onSubmit }) {
-  const [sender, setSender] = useState('');
-  const [recipient, setRecipient] = useState('');
-  const [prokerRef, setProkerRef] = useState('');
-  const [body, setBody] = useState('');
-  const [theme, setTheme] = useState('parchment');
-
-  if (!isOpen) return null;
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newMsg = {
-      id: 'msg-' + Date.now(),
-      sender: sender.trim(),
-      recipient: recipient.trim(),
-      prokerRef: prokerRef.trim(),
-      body: body.trim(),
-      date: formatDateIndonesian(new Date().toISOString().split('T')[0]),
-      theme
-    };
-    onSubmit(newMsg);
-    onClose();
-
-    // Scroll smoothly to messages section
-    setTimeout(() => {
-      const el = document.getElementById('pesan');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }, 200);
-  };
-
-  return (
-    <div className="modal-backdrop active" role="dialog" aria-modal="true">
-      <div className="envelope-style-modal">
-        <button className="modal-close-btn" onClick={onClose} aria-label="Tutup">
-          <i className="fa-solid fa-xmark"></i>
-        </button>
-
-        <div className="parchment-letter-card">
-          <div className="parchment-header">
-            <span className="parchment-tag">Surat Kasih & Ucapan</span>
-            <h3 className="parchment-title">Torehkan Jejak Kata untuk Kakak</h3>
-            <p className="parchment-sub">Kata-katamu adalah pelipur lelah terbaik bagi kakak pengurus yang telah mendedikasikan energinya.</p>
-          </div>
-
-          <form className="letter-form" onSubmit={handleSubmit}>
-            <div className="form-row">
-              <div className="form-group col-half">
-                <label className="form-label">Namamu / Inisial *</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={sender}
-                  onChange={(e) => setSender(e.target.value)}
-                  placeholder="Contoh: Rian (Divisi Acara 24)"
-                  required
-                />
-              </div>
-              <div className="form-group col-half">
-                <label className="form-label">Ditujukan Kepada *</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={recipient}
-                  onChange={(e) => setRecipient(e.target.value)}
-                  placeholder="Contoh: Kak Zahra / Seluruh BPH"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Momen / Proker Paling Berkesan Bersama Beliau</label>
-              <input
-                type="text"
-                className="form-input"
-                value={prokerRef}
-                onChange={(e) => setProkerRef(e.target.value)}
-                placeholder="Contoh: Waktu gladi bersih Makrab & evaluasi tengah malam"
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Isi Surat / Ucapan Terima Kasih *</label>
-              <textarea
-                className="form-input textarea-field"
-                rows="4"
-                value={body}
-                onChange={(e) => setBody(e.target.value)}
-                placeholder="Tuliskan ucapan terima kasih, kesan berharga, dan doa untuk langkah kakak ke depannya..."
-                required
-              ></textarea>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Pilih Corak Kertas Surat</label>
-              <div className="letter-theme-selector">
-                <label className={`theme-choice ${theme === 'parchment' ? 'active' : ''}`}>
-                  <input
-                    type="radio"
-                    name="letterTheme"
-                    value="parchment"
-                    checked={theme === 'parchment'}
-                    onChange={() => setTheme('parchment')}
-                  />
-                  <span className="theme-preview bg-parchment"></span>
-                  <span>Klasik</span>
-                </label>
-                <label className={`theme-choice ${theme === 'sage' ? 'active' : ''}`}>
-                  <input
-                    type="radio"
-                    name="letterTheme"
-                    value="sage"
-                    checked={theme === 'sage'}
-                    onChange={() => setTheme('sage')}
-                  />
-                  <span className="theme-preview bg-sage"></span>
-                  <span>Sejuk</span>
-                </label>
-                <label className={`theme-choice ${theme === 'blush' ? 'active' : ''}`}>
-                  <input
-                    type="radio"
-                    name="letterTheme"
-                    value="blush"
-                    checked={theme === 'blush'}
-                    onChange={() => setTheme('blush')}
-                  />
-                  <span className="theme-preview bg-blush"></span>
-                  <span>Hangat</span>
-                </label>
-              </div>
-            </div>
-
-            <button type="submit" className="btn btn-primary w-100 btn-lg mt-3">
-              <i className="fa-solid fa-paper-plane"></i> Kirim Surat ke Dinding Apresiasi
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================================
-// MOUNT REACT ROOT
-// ============================================================================
-const container = document.getElementById('root');
-if (container) {
-  const root = ReactDOM.createRoot(container);
-  root.render(<App />);
-}
+    // ============================================================================
+    // MOUNT REACT ROOT
+    // ============================================================================
+    const container = document.getElementById('root');
+    if (container) {
+      const root = ReactDOM.createRoot(container);
+      root.render(<App />);
+    }
 
   </script>
 </body>
